@@ -17,6 +17,7 @@
 #define UNGETMAX 10             /* Can un-get at most 10 characters. */
 
 static unsigned char ungetArray[UNGETMAX];
+int bufCount = -1;
 
 /**
  * Synchronously read a character from a UART.  This blocks until a character is
@@ -42,20 +43,18 @@ syscall kgetc(void) // i was here
     //ungetArray
     //otherwise fr & regptr->PL011_FR_RXFE
     //dr
-    int i;
-    for(i=0; i<UNGETMAX; i++) {
-        if(ungetArray[i] != NULL) {
-            return (int)ungetArray[i];
-            //maybe ungetArray[i] = 0;
-        }
+    if(bufCount != -1) {
+        c = ungetArray[bufCount];
+        ungetArray[bufCount] = '\0';
+        bufCount--;
+        return c;
     }
-    if(regptr->fr != PL011_FR_RXFE) {
-        return (int)regptr->fr;
-        //maybe tr->PL011_FR_RXFE = 0;
-    }
-    //something with dr??
+    
+    while(regptr->fr & PL011_FR_RXFE) {
 
-	return SYSERR;
+    }
+
+    return (int)regptr->dr;
 }
 
 /**
@@ -70,18 +69,11 @@ syscall kcheckc(void)
     // TODO: Check the unget buffer and the UART for characters.
 	//hint in lab: if anything in these then do something if else do a diff thing
 
-    int i;
-    for(i=0; i<UNGETMAX; i++) {
-        if(ungetArray[i] != NULL) {
-            return 1; //return true;
-        }
+    if(bufCount > -1 || regptr->fr & PL011_FR_RXFF) {
+        return 1; //return true;
+    }else {
+        return 0;
     }
-    if(regptr->fr != PL011_FR_RXFE) {
-        return 1;//return true;
-    }
-    return 0; //return false;
-
-    return SYSERR;
 }
 
 /**
@@ -96,10 +88,9 @@ syscall kungetc(unsigned char c)
 
     int i;
     for(i=0; i<UNGETMAX; i++) {
-        if(ungetArray[i] == NULL) {
+        if(ungetArray[i] == '\0') {
             ungetArray[i] = c;
-            //idk if we need to nullify c
-            c = NULL;
+            bufCount++;
 
             return ungetArray[i];
         }
@@ -138,12 +129,10 @@ syscall kputc(uchar c)
     //       Once the Transmitter FIFO is not full, send character c.
     //while(regptr->fr & PL011_FR_TXFF)
     //regptr->dr=c;
-    if(regptr->fr != PL011_FR_TXFF) {
-        regptr->dr = c;
-        return (int)c;
+    while(regptr->fr & PL011_FR_TXFF) {
     }
 
-	return SYSERR;
+    return regptr->dr;
 }
 
 /**
