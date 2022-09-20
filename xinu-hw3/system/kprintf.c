@@ -26,7 +26,7 @@ static unsigned char ungetArray[UNGETMAX];
  *      The character read from the UART as an <code>unsigned char</code> cast
  *      to an <code>int</code>.
  */
-syscall kgetc(void)
+syscall kgetc(void) // i was here
 {
     volatile struct pl011_uart_csreg *regptr;
     uchar c;
