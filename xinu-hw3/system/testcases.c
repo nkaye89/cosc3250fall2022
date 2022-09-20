@@ -24,12 +24,31 @@ void testcases(void)
     int c;
 
     kprintf("===TEST BEGIN===\r\n");
-
+    //kputc must work if kgetc works
+    //kgetc works
     c = kgetc();
     switch (c)
     {
-
     // TODO: Test your operating system!
+
+    //kcheckc 
+    case '2': 
+    if(kungetc('1') == '1'){}
+    if(kcheckc() == 1) {
+        kprintf("kcheckc test passed\n");
+    }else {
+        kprintf("kcheckc test failed\n");
+    }
+    break;
+
+    //kungetc
+    case '1':
+    if(kungetc('1') == '1') {
+	    kprintf("kungetc test passed\n");
+    }else {
+        kprintf("kungetc test failed\n");
+    }
+    break;
 
     default:
 	kprintf("Hello Xinu World!\r\n");

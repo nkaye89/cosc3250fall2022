@@ -69,7 +69,7 @@ syscall kcheckc(void)
     // TODO: Check the unget buffer and the UART for characters.
 	//hint in lab: if anything in these then do something if else do a diff thing
 
-    if(bufCount > -1 || regptr->fr & PL011_FR_RXFF) {
+    if(bufCount > -1 || (regptr->fr & PL011_FR_RXFF)) {
         return 1; //return true;
     }else {
         return 0;
@@ -132,7 +132,8 @@ syscall kputc(uchar c)
     while(regptr->fr & PL011_FR_TXFF) {
     }
 
-    return regptr->dr;
+    regptr->dr = c;
+    return (int)c;
 }
 
 /**
