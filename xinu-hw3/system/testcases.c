@@ -11,6 +11,15 @@
  */
 /* Embedded XINU, Copyright (C) 2007.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * tests kprintf methods.
+ * @authors [Noah Kaye Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu zach.thompson@marquette.edu]
+ */
+
+
 #include <xinu.h>
 
 devcall putc(int dev, char c) { return 0; }
