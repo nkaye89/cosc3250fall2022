@@ -59,6 +59,11 @@ void testcases(void)
     }
     break;
 
+    //putc longstring test
+    case '9':
+    kprintf("This is a line that tests to see if kprintf can print more than 64 characters in one line in a single kprintf statement.");
+    break;
+
     default:
 	kprintf("Hello Xinu World!\r\n");
     }

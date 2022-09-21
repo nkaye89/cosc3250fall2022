@@ -43,9 +43,9 @@ syscall kgetc(void) // i was here
     //ungetArray
     //otherwise fr & regptr->PL011_FR_RXFE
     //dr
-    if(bufCount != -1) {
+    if(bufCount > -1) {
         c = ungetArray[bufCount];
-        ungetArray[bufCount] = '\0';
+        //ungetArray[bufCount] = '\0';
         bufCount--;
         return c;
     }
@@ -69,7 +69,7 @@ syscall kcheckc(void)
     // TODO: Check the unget buffer and the UART for characters.
 	//hint in lab: if anything in these then do something if else do a diff thing
 
-    if(bufCount > -1 || (regptr->fr & PL011_FR_RXFF)) {
+    if(bufCount > -1 || (!(regptr->fr & PL011_FR_RXFF))) {
         return 1; //return true;
     }else {
         return 0;
@@ -86,14 +86,11 @@ syscall kungetc(unsigned char c)
     // TODO: Check for room in unget buffer, put the character in or discard.
 	//hint in lab: create global array
 
-    int i;
-    for(i=0; i<UNGETMAX; i++) {
-        if(ungetArray[i] == '\0') {
-            ungetArray[i] = c;
-            bufCount++;
+    if((bufCount >= -1) && (bufCount < 9)) {
+        bufCount++;
+        ungetArray[bufCount] = c;
 
-            return ungetArray[i];
-        }
+        return ungetArray[bufCount];
     }
 
     return SYSERR;
