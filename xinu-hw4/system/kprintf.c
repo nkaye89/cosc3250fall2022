@@ -148,6 +148,13 @@ syscall kputc(uchar c)
  */
 syscall kprintf(const char *format, ...)
 {
+    //somewhere in kprintf call lock_acquire(parameter)
+    //look in spinlock.h for parameter
+    //then all the code
+    //after code
+    //lock_release(parameter)
+    //again check spinlock.h for parameter
+    
     int retval;
     va_list ap;
 

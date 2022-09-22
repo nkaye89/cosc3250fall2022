@@ -5,7 +5,59 @@
  * Embedded Xinu, Copyright (C) 2018. All rights reserved.
  */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu zach.thompson@marquette.edu]
+ */
+
 #include <spinlock.h>
+
+
+	/** LAB NOTES ON ARM ASSEMBLY
+
+	layout CMD var1, var2,...
+
+	REGISTERS:
+	registers r0-r3 are called non-volatile
+	r0 is called the return variable
+	non-volatile registers are the parameters
+
+	volatile registers r4-r15 are temporary variables
+	^^^SHOULD NOT NEED TO USE THESE FOR THIS ASSIGNMENT^^^
+
+	COMMANDS:
+//	mov r0, #5
+	r0 = 5
+	can also use predefined vars
+//	mov r0, #SPINLOCK_LOCKED
+
+//	cmp r0, r1
+	compares r0 to r1
+	if(r0 == r1)
+
+//	beq _method
+	method()
+	runs if cmp command is (eq) equal
+
+//	bne _method
+	method()
+	runs if cmp command is (ne) not equal
+
+//	ldrex r1, [r0]
+	(do not use ldr in this assignment, only ldrex)
+	loads the address from r0 into r1
+	for pointers!
+
+//	strex r2, r1, [r0]
+	r2 is the success register
+	address in r1 is loaded into r0
+	for pointers and memory addresses
+
+	*/
+
 
 /**
  * @fn void _lock_acquire(unsigned int *lock)
@@ -26,6 +78,22 @@ _lock_acquire:
 	//	 	If it is, then retry.
 	//	 Second, use strex to try to set the lock to SPINLOCK_LOCKED.
 	//	 	If strex fails, try from the top.
+
+	//from lab:
+	//ldrex will be first command
+	//if locked then branch back to a certain point to retry until the lock is unlocked
+	//if unlocked then store value in memory address and check if successful
+	// end from lab
+
+	//Noah's edits
+	_retry: ldrex r1, [r0]
+	cmp r1, #SPINLOCK_LOCKED
+	beq _retry
+	mov r1, #SPINLOCK_LOCKED
+	strex r2, r1, [r0]
+	cmp r2, #0
+	bne _retry
+	//end Noah's edits
 
 	dmb			/* Data Memory Barrier	*/
 	bx	lr

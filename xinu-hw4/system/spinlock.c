@@ -5,6 +5,14 @@
  * Embedded Xinu, Copyright (C) 2008, 2018. All rights reserved.
  */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 struct lockent locktab[NLOCK];  /* spinlock table */
@@ -63,9 +71,23 @@ syscall lock_free(spinlock_t lock)
  */
 syscall lock_acquire(spinlock_t lock)
 {
+    //GETCPUID (somewhere in include, idk where)
+
+    //mostly will be doing something like this in most methods
+    //int *p;
+    //lock acquire
+    //do something
+    //lock release
+
     // TODO: First, check if lock is a valid lock.
     //       Next, call _lock_acquire assembly subroutine
     //       and properly set "core" field of lockent struct        
+    
+    //I started this method, but the call to _lock_acquire and
+    //the set of the core field still need to be implemented
+    if(isbadlock(lock)) {
+        return SYSERR;
+    }
 
     return OK;
 }

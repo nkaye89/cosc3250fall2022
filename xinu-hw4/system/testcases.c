@@ -33,6 +33,10 @@ void core_acquire(spinlock_t lock)
  */
 void testcases(void)
 {
+
+    //add one test case for full points
+    //copy one and modify it slightly
+
     int c, i, status;
     spinlock_t testlock;
 
