@@ -8,9 +8,9 @@
 /**
  * COSC 3250 - Project 3
  * Implements kprintf
- * @authors [Noah Kaye Zach Thompson]
+ * @authors [Noah Kaye; Zach Thompson]
  * Instructor [sabirat]
- * TA-BOT:MAILTO [noah.kaye@marquette.edu zach.thompson@marquette.edu]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
  */
 
 #include <spinlock.h>

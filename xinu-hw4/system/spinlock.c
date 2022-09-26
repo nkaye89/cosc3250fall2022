@@ -8,9 +8,9 @@
 /**
  * COSC 3250 - Project 3
  * Implements kprintf
- * @authors [Noah Kaye Zach Thompson]
+ * @authors [Noah Kaye; Zach Thompson]
  * Instructor [sabirat]
- * TA-BOT:MAILTO [noah.kaye@marquette.edu zach.thompson@marquette.edu]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
  */
 
 #include <xinu.h>
@@ -71,8 +71,6 @@ syscall lock_free(spinlock_t lock)
  */
 syscall lock_acquire(spinlock_t lock)
 {
-    //GETCPUID (somewhere in include, idk where)
-
     //mostly will be doing something like this in most methods
     //int *p;
     //lock acquire
@@ -82,12 +80,17 @@ syscall lock_acquire(spinlock_t lock)
     // TODO: First, check if lock is a valid lock.
     //       Next, call _lock_acquire assembly subroutine
     //       and properly set "core" field of lockent struct        
-    
-    //I started this method, but the call to _lock_acquire and
-    //the set of the core field still need to be implemented
+
+    //check lock
     if(isbadlock(lock)) {
         return SYSERR;
     }
+
+    //lockacquire
+    _lock_acquire((unsigned int *) locktab[lock].lock);
+
+    //set core field
+    locktab[lock].core = getcpuid();
 
     return OK;
 }
@@ -102,6 +105,17 @@ syscall lock_release(spinlock_t lock)
     // TODO: Check if lock is a valid lock.
     //       Call _lock_release assembly subroutine and
     //       reset "core" field of lockent struct
+
+    //check lock
+    if(isbadlock(lock)) {
+        return SYSERR;
+    }
+
+    //lock release
+    _lock_release((unsigned int *) locktab[lock].lock);
+
+    //reset core
+    locktab[lock].core = NULL;
 
     return OK;
 }
