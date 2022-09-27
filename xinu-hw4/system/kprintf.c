@@ -17,7 +17,7 @@
 #define UNGETMAX 10             /* Can un-get at most 10 characters. */
 
 static unsigned char ungetArray[UNGETMAX];
-int bufCount = -1;
+static unsigned int bufCount = 0;
 
 /**
  * Synchronously read a character from a UART.  This blocks until a character is
@@ -43,18 +43,15 @@ syscall kgetc(void) // i was here
     //ungetArray
     //otherwise fr & regptr->PL011_FR_RXFE
     //dr
-    if(bufCount > -1) {
-        c = ungetArray[bufCount];
-        //ungetArray[bufCount] = '\0';
-        bufCount--;
-        return c;
+    if(bufCount > 0) {
+        return ungetArray[--bufCount];
     }
     
     while(regptr->fr & PL011_FR_RXFE) {
 
     }
 
-    return (int)regptr->dr;
+    return regptr->dr;
 }
 
 /**
@@ -69,10 +66,10 @@ syscall kcheckc(void)
     // TODO: Check the unget buffer and the UART for characters.
 	//hint in lab: if anything in these then do something if else do a diff thing
 
-    if(bufCount > -1 || (!(regptr->fr & PL011_FR_RXFF))) {
-        return 1; //return true;
-    }else {
+    if(bufCount <= 0 && regptr->fr & PL011_FR_RXFF) {
         return 0;
+    }else {
+        return 1;
     }
 }
 
@@ -86,11 +83,10 @@ syscall kungetc(unsigned char c)
     // TODO: Check for room in unget buffer, put the character in or discard.
 	//hint in lab: create global array
 
-    if((bufCount >= -1) && (bufCount < 9)) {
-        bufCount++;
-        ungetArray[bufCount] = c;
+    if(bufCount < UNGETMAX) {
+        ungetArray[bufCount++] = c;
 
-        return ungetArray[bufCount];
+        return c;
     }
 
     return SYSERR;
@@ -154,12 +150,14 @@ syscall kprintf(const char *format, ...)
     //after code
     //lock_release(parameter)
     //again check spinlock.h for parameter
-    
+
     int retval;
     va_list ap;
 
+    lock_acquire(serial_lock);
     va_start(ap, format);
     retval = _doprnt(format, ap, (int (*)(int, int))kputc, 0);
     va_end(ap);
+    lock_release(serial_lock);
     return retval;
 }

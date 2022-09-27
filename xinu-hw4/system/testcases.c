@@ -28,15 +28,28 @@ void core_acquire(spinlock_t lock)
         ;
 }
 
+void print_another_core(spinlock_t lock) {
+    lock = lock_create();
+
+    lock_acquire(lock);
+    print_lockent(lock);
+
+    lock_free(lock);
+    while(1);
+}
+
+void core_competition(spinlock_t lock) {
+
+    lock_acquire(lock);
+    print_lockent(lock);
+
+    while(1);
+}
+
 /**
  * testcases - called after initialization completes to test things.
  */
-void testcases(void)
-{
-
-    //add one test case for full points
-    //copy one and modify it slightly
-
+void testcases(void) {
     int c, i, status;
     spinlock_t testlock;
 
@@ -91,8 +104,10 @@ void testcases(void)
         // Acquire lock on another core.
         // This tests that the core field is being set.
         // Expected output is that lock field is locked and core field is 1.
-        
+
         // TODO: Write this testcase.
+        unparkcore(1, (void *)print_another_core, testlock);
+
         break;
 
     case '5':
@@ -106,7 +121,13 @@ void testcases(void)
         // Expected output is that the core field should be 0.
 
         // TODO: Write this testcase.
-        lock_free(testlock);
+        testlock = lock_create();
+        lock_acquire(testlock);
+        print_lockent(testlock);
+
+        unparkcore(1, (void *)core_competition, testlock);
+        unparkcore(2, (void *)core_competition, testlock);
+        unparkcore(3, (void *)core_competition, testlock);
         break;
 
     default:

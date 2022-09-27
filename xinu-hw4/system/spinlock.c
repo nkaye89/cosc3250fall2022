@@ -87,7 +87,7 @@ syscall lock_acquire(spinlock_t lock)
     }
 
     //lockacquire
-    _lock_acquire((unsigned int *) locktab[lock].lock);
+    _lock_acquire((unsigned int *) &(locktab[lock].lock));
 
     //set core field
     locktab[lock].core = getcpuid();
@@ -110,12 +110,12 @@ syscall lock_release(spinlock_t lock)
     if(isbadlock(lock)) {
         return SYSERR;
     }
+    
+    //reset core
+    locktab[lock].core = -1;
 
     //lock release
-    _lock_release((unsigned int *) locktab[lock].lock);
-
-    //reset core
-    locktab[lock].core = NULL;
+    _lock_release((unsigned int *) &(locktab[lock].lock));
 
     return OK;
 }
