@@ -13,8 +13,7 @@
 #define ARM_MODE_SYS 0x1F    /* System Running Priviledged Operating System Tasks Mode */
 
 /* Definitions of interrupt disable bits in the ARM program status register.
- * See: A2.5.6 "The interrupt disable bits" of the ARM Architecture Reference
- * Manual.  */
+ * See: A2.5.6 "The interrupt disable bits" of the ARM Architecture Reference Manual.  */
 #define ARM_I_BIT 0x80    /* IRQs disabled when set to 1. */
 #define ARM_F_BIT 0x40    /* FIQs disabled when set to 1. */
 
@@ -36,10 +35,10 @@
 #define PREG_R9		9
 #define PREG_R10	10
 #define PREG_R11	11
-#define PREG_IP		12		/* Intra-procedural scratch register		*/
-#define PREG_SP		13		/* Stack pointer							*/
-#define PREG_LR		14		/* Link register							*/
-#define PREG_PC		15		/* Program counter							*/
+#define PREG_IP		12		// Intra-procedural scratch register - gives ability to swap registers
+#define PREG_SP		13		// Stack pointer - holds memory address of where stack is
+#define PREG_LR		14		// Link register - where to return to when finishing instructions
+#define PREG_PC		15		// Program counter - stores the address of the next instructions
 
 #define PREGS		16		/* Regs stored by context switches			*/
 

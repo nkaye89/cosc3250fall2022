@@ -23,6 +23,7 @@ void *getstk(ulong);
  * @param ssize    stack size in bytes
  * @param name     name of the process, used for debugging
  * @param nargs    number of arguments that follow
+ * @param ... 	   potential arguments of funaddr function
  * @return the new process id
  */
 syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
@@ -53,14 +54,17 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 	/* setup PCB entry for new proc */
 	ppcb->state = PRSUSP;
 
-	// TODO: Setup PCB entry for new process.
+	// TODO: Setup PCB (Process Control Block) entry for new process. [4 lines of code]
+	ppcb->stkbase = *saddr; // stack base to stack address, maybe cast (void *)
+	ppcb->stklen = ssize; // stack length
+	ppcb->core_affinity = -1; // set core to 1
+	strncpy(ppcb->name, *name, strlen(name)); // set the name provided (char* name) using strncpy() = strncpy(ppcb->name, name)
 
-
-	/* Initialize stack with accounting block. */
-	*saddr = STACKMAGIC;
-	*--saddr = pid;
-	*--saddr = ppcb->stklen;
-	*--saddr = (ulong)ppcb->stkbase;
+	// Initialize stack with accounting block
+	*saddr = STACKMAGIC; 						// indicates that it's a stack, defined constant number
+	*--saddr = pid;		 						// processor id
+	*--saddr = ppcb->stklen; 					// stack length
+	*--saddr = (ulong)ppcb->stkbase;			// stack base
 
 	/* Handle variable number of arguments passed to starting function   */
 	if (nargs)
@@ -74,12 +78,51 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 		*--saddr = 0;
 	}
 
-	// TODO: Initialize process context.
-	//
-	// TODO:  Place arguments into activation record.
-	//        See K&R 7.3 for example using va_start, va_arg and
-	//        va_end macros for variable argument functions.
+	// if 4 parameters, save in regs[]
+	// if >4, save excess in stack (LIFO)
 
+
+	// TODO: Initialize process context.
+	// Using registers 13-15, only 3 lines of code?
+	ppcb->regs[PREG_SP] = (int) *saddr;
+	ppcb->regs[PREG_LR] = (int) userret;
+	ppcb->regs[PREG_PC] = (int) funcaddr;
+
+	/* TODO:  Place arguments into activation record.
+	          See K&R 7.3 for example using va_start, va_arg and va_end macros for variable argument functions */
+
+	// va_start in first line
+	// 2 instances of va_arg
+	// va_end as last line
+	// 2 for loops: args 1-4 in regs, args 5-8 in stack
+	va_start(ap, nargs);
+	if(nargs > 0 && nargs <= 4) {
+		for(i=0; i < nargs; i++)
+		{
+			*saddr = va_arg(ap,int);
+			ppcb->regs[i] = saddr;
+			saddr++;
+		}
+		saddr = saddr - nargs; // Shift saddr back to bottom of stack
+	}
+	else if (nargs > 4) {
+		for(i=0; i < 4; i++)
+		{
+			*saddr = va_arg(ap, int);
+			ppcb->regs[i] = (int) *saddr;
+			saddr++;
+		}
+		saddr = saddr + 11; // shift saddr up to pads
+		for(i=0; i<pads; i++)
+		{
+			saddr++;
+			*saddr = va_arg(ap, int);
+		}
+		saddr = saddr - 3;	// shift saddr back down to arg 4
+	}
+	va_end(ap);
+
+	ppcb->regs[PREG_SP] = (int)saddr;
 	return pid;
 }
 

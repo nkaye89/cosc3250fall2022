@@ -22,10 +22,15 @@
 
 /* process state constants                                               */
 
-#define PRFREE      0       /**< process slot is free                    */
+#define PRFREE      0       /**< process slot is free/null               */
 #define PRCURR      1       /**< process is currently running            */
-#define PRSUSP      2       /**< process is suspended                    */
-#define PRREADY     3       /**< process is on ready queue               */
+#define PRSUSP      2       // process is suspended, created but not used or ready
+#define PRREADY     3       // process is on ready queue, but not currently running
+
+// to go from PRFREE to PRSUSP, use create()
+// to go from PRSUSP to PRREADY, use ready()
+// to go from PRREADY to PRCURR and back, use resched()
+// to go from PR* to PREFREE, use kill()
 
 /* miscellaneous process definitions                                     */
 
@@ -50,16 +55,16 @@
 #define isbadpid(x) ((x)<0 || (x)>=NPROC || PRFREE == proctab[(x)].state)
 
 /* process table entry */
-
+// going to use this in create.c
 typedef struct pentry
 {
-    int state;                  /**< process state: PRCURR, etc.             */
-    void *stkbase;              /**< base of run time stack                  */
-    int stklen;                 /**< stack length                            */
-	int core_affinity;          /**< core affinity                           */
-    char name[PNMLEN];          /**< process name                            */
-	int regs[PREGS];			/**< stored process registers                */
-} pcb;
+    int state;                  // < process state: PRCURR, etc.             
+    void *stkbase;              // < base of run time stack, need to know its location
+    int stklen;                 // < stack length                            
+	int core_affinity;          // < core affinity, tells what core it's running on
+    char name[PNMLEN];          // < process name - important for debugging
+	int regs[PREGS];			// < stored process registers - screenshot of registers to refer to later [see arm.h for PREGS details]
+} pcb; // use this name (pcb) to define process
 
 /* process initialization constants */
 #define INITSTK  65536      /**< initial process stack size              */
@@ -70,6 +75,6 @@ typedef struct pentry
 
 extern struct pentry proctab[];
 extern int numproc;         /**< currently active processes              */
-extern int currpid[];         /**< currently executing process             */
+extern int currpid[];       /**< currently executing process             */
 
-#endif                          /* _PROC_H_ */
+#endif                      /* _PROC_H_ */
