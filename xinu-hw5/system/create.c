@@ -55,7 +55,7 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 	ppcb->state = PRSUSP;
 
 	// TODO: Setup PCB (Process Control Block) entry for new process. [4 lines of code]
-	ppcb->stkbase = *saddr; // stack base to stack address, maybe cast (void *)
+	ppcb->stkbase = (void *)saddr; // stack base to stack address, maybe cast (void *)
 	ppcb->stklen = ssize; // stack length
 	ppcb->core_affinity = -1; // set core to 1
 	strncpy(ppcb->name, *name, strlen(name)); // set the name provided (char* name) using strncpy() = strncpy(ppcb->name, name)
@@ -100,7 +100,7 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 		for(i=0; i < nargs; i++)
 		{
 			*saddr = va_arg(ap,int);
-			ppcb->regs[i] = saddr;
+			ppcb->regs[i] = *saddr;
 			saddr++;
 		}
 		saddr = saddr - nargs; // Shift saddr back to bottom of stack

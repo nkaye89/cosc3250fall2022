@@ -29,8 +29,33 @@ ctxsw:
 	.func ctxsw
 
 	// TODO: Save callee-save ("non-volatile") registers.
+	str r4, [r0, #PREG_R4*4]
+	str r5, [r0, #PREG_R5*4]
+	str r6, [r0, #PREG_R6*4]
+	str r7, [r0, #PREG_R7*4]
+	str r8, [r0, #PREG_R8*4]
+	str r9, [r0, #PREG_R9*4]
+	str r10, [r0, #PREG_R10*4]
+	str r11, [r0, #PREG_R11*4]
+	str ip, [r0, #PREG_IP*4]
+	str sp, [r0, #PREG_SP*4]
+	str lr, [r0, #PREG_LR*4]
+
 	// TODO: Restore callee-save ("non-volatile") registers.
+	ldr r4, [r1, #PREG_R4*4]
+	ldr r5, [r1, #PREG_R5*4]
+	ldr r6, [r1, #PREG_R6*4]
+	ldr r7, [r1, #PREG_R7*4]
+	ldr r8, [r1, #PREG_R8*4]
+	ldr r9, [r1, #PREG_R9*4]
+	ldr r10, [r1, #PREG_R10*4]
+	ldr r11, [r1, #PREG_R11*4]
+	ldr ip, [r1, #PREG_IP*4]
+	ldr sp, [r1, #PREG_SP*4]
+	ldr lr, [r1, #PREG_LR*4]
+
 	// TODO: Jump to next function.
+	ldr pc, [r1, #PREG_PC*4]
 
 	// using ldr to load new registers and str to save old registers
 	// a lot of copy and paste, with come changes due to special cases (like r15 or possible overwriting)
