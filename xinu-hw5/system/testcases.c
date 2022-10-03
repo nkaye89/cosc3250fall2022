@@ -11,6 +11,14 @@
  */
 /* Embedded XINU, Copyright (C) 2007.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 extern void main(int, char *);
@@ -110,7 +118,9 @@ void testcases(void)
                      0x55555555, 0x66666666, 0x77777777, 0x88888888);
         printpcb(pid);
         // TODO: print out stack with extra args
+
         // TODO: ready(pid, RESCHED_YES, 0);
+        //ready(pid, RESCHED_YES, 0);
         break;
 
     case '2':

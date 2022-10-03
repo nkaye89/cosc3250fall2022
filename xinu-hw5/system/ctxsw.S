@@ -6,6 +6,14 @@
  */
 /* Embedded XINU, Copyright (C) 2013.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <arm.h>
 
 .text
