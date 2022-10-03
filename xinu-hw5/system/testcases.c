@@ -86,6 +86,21 @@ void printpcb(int pid)
     kprintf("Stack length of process   : %8u \r\n", ppcb->stklen);
 }
 
+void printstack(int pid, int nargs) {
+        pcb *ppcb = NULL;
+        ppcb = &proctab[pid];
+	    ulong *saddr = ppcb->stkbase;
+        //ulong pads = ((nargs - 1) / 4) * 4;
+        
+        kprintf("\nStack:\r\n");
+
+        int i;
+        for(i=0; i<(nargs+PREGS); i++) {
+            kprintf("0x%08x:\t0x%08x     \r\n", saddr, *saddr);
+		    saddr--;
+        }
+}
+
 /**
  * testcases - called after initialization completes to test things.
  */
@@ -118,9 +133,9 @@ void testcases(void)
                      0x55555555, 0x66666666, 0x77777777, 0x88888888);
         printpcb(pid);
         // TODO: print out stack with extra args
-
+        printstack(pid, 8);
         // TODO: ready(pid, RESCHED_YES, 0);
-        //ready(pid, RESCHED_YES, 0);
+        ready(pid, RESCHED_YES, 0);
         break;
 
     case '2':
