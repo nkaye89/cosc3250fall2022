@@ -58,7 +58,7 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 	ppcb->stkbase = (void *)saddr; // stack base to stack address, maybe cast (void *)
 	ppcb->stklen = ssize; // stack length
 	ppcb->core_affinity = -1; // set core to 1
-	strncpy(ppcb->name, *name, strlen(name)); // set the name provided (char* name) using strncpy() = strncpy(ppcb->name, name)
+	strncpy(ppcb->name, name, strlen(name)); // set the name provided (char* name) using strncpy() = strncpy(ppcb->name, name)
 
 	// Initialize stack with accounting block
 	*saddr = STACKMAGIC; 						// indicates that it's a stack, defined constant number
@@ -97,6 +97,7 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 	// 2 for loops: args 1-4 in regs, args 5-8 in stack
 	va_start(ap, nargs);
 	if(nargs > 0 && nargs <= 4) {
+		//put args into regs[0-3]
 		for(i=0; i < nargs; i++)
 		{
 			*saddr = va_arg(ap,int);

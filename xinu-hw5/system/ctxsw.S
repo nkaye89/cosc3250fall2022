@@ -42,17 +42,23 @@ ctxsw:
 	str lr, [r0, #PREG_LR*4]
 
 	// TODO: Restore callee-save ("non-volatile") registers.
-	ldr r4, [r1, #PREG_R4*4]
-	ldr r5, [r1, #PREG_R5*4]
-	ldr r6, [r1, #PREG_R6*4]
-	ldr r7, [r1, #PREG_R7*4]
-	ldr r8, [r1, #PREG_R8*4]
-	ldr r9, [r1, #PREG_R9*4]
-	ldr r10, [r1, #PREG_R10*4]
-	ldr r11, [r1, #PREG_R11*4]
-	ldr ip, [r1, #PREG_IP*4]
-	ldr sp, [r1, #PREG_SP*4]
-	ldr lr, [r1, #PREG_LR*4]
+	mov ip, r1
+
+	ldr r0, [ip, #PREG_R0*4]
+	ldr r1, [ip, #PREG_R1*4]
+	ldr r2, [ip, #PREG_R2*4]
+	ldr r3, [ip, #PREG_R3*4]
+	ldr r4, [ip, #PREG_R4*4]
+	ldr r5, [ip, #PREG_R5*4]
+	ldr r6, [ip, #PREG_R6*4]
+	ldr r7, [ip, #PREG_R7*4]
+	ldr r8, [ip, #PREG_R8*4]
+	ldr r9, [ip, #PREG_R9*4]
+	ldr r10, [ip, #PREG_R10*4]
+	ldr r11, [ip, #PREG_R11*4]
+	ldr ip, [ip, #PREG_IP*4]
+	ldr sp, [ip, #PREG_SP*4]
+	ldr lr, [ip, #PREG_LR*4]
 
 	// TODO: Jump to next function.
 	ldr pc, [r1, #PREG_PC*4]
