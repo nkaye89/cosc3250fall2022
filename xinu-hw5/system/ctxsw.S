@@ -48,6 +48,7 @@ ctxsw:
 	str ip, [r0, #PREG_IP*4]
 	str sp, [r0, #PREG_SP*4]
 	str lr, [r0, #PREG_LR*4]
+	str pc, [r0, #PREG_LR*4]
 
 	// TODO: Restore callee-save ("non-volatile") registers.
 	mov ip, r1
@@ -64,12 +65,11 @@ ctxsw:
 	ldr r9, [ip, #PREG_R9*4]
 	ldr r10, [ip, #PREG_R10*4]
 	ldr r11, [ip, #PREG_R11*4]
-	ldr ip, [ip, #PREG_IP*4]
 	ldr sp, [ip, #PREG_SP*4]
 	ldr lr, [ip, #PREG_LR*4]
 
 	// TODO: Jump to next function.
-	ldr pc, [r1, #PREG_PC*4]
+	ldr pc, [ip, #PREG_PC*4]
 
 	// using ldr to load new registers and str to save old registers
 	// a lot of copy and paste, with come changes due to special cases (like r15 or possible overwriting)

@@ -65,7 +65,7 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 	// TODO: Setup PCB (Process Control Block) entry for new process. [4 lines of code]
 	ppcb->stkbase = (void *)saddr; // stack base to stack address, maybe cast (void *)
 	ppcb->stklen = ssize; // stack length
-	ppcb->core_affinity = -1; // set core to 1
+	ppcb->core_affinity = -1; // set core to -1
 	strncpy(ppcb->name, name, strlen(name)); // set the name provided (char* name) using strncpy() = strncpy(ppcb->name, name)
 
 	// Initialize stack with accounting block
@@ -104,30 +104,14 @@ syscall create(void *funcaddr, ulong ssize, char *name, ulong nargs, ...)
 	// va_end as last line
 	// 2 for loops: args 1-4 in regs, args 5-8 in stack
 	va_start(ap, nargs);
-	if(nargs > 0 && nargs <= 4) {
-		//put args into regs[0-3]
-		for(i=0; i < nargs; i++)
-		{
-			*saddr = va_arg(ap,int);
-			ppcb->regs[i] = *saddr;
-			saddr++;
+	//put args into regs[0-3]
+	for(i=0; i < nargs; i++)
+	{
+		if(i < 4) {
+			ppcb->regs[i] = va_arg(ap,int);
+		}else {
+			saddr[i-4] = va_arg(ap,int);
 		}
-		saddr = saddr - nargs; // Shift saddr back to bottom of stack
-	}
-	else if (nargs > 4) {
-		for(i=0; i < 4; i++)
-		{
-			*saddr = va_arg(ap, int);
-			ppcb->regs[i] = (int) *saddr;
-			saddr++;
-		}
-		saddr = saddr + 11; // shift saddr up to pads
-		for(i=0; i<pads; i++)
-		{
-			saddr++;
-			*saddr = va_arg(ap, int);
-		}
-		saddr = saddr - 3;	// shift saddr back down to arg 4
 	}
 	va_end(ap);
 

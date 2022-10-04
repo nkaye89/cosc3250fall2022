@@ -34,7 +34,7 @@ int testmain(int argc, char **argv)
         kprintf("This is process %d\r\n", currpid[cpuid]);
 
         /* Uncomment the resched() line for cooperative scheduling. */
-       	// resched();
+       	resched();
     }
     return 0;
 }
@@ -86,7 +86,7 @@ void printpcb(int pid)
     kprintf("Stack length of process   : %8u \r\n", ppcb->stklen);
 }
 
-void printstack(int pid, int nargs) {
+void printStack(int pid, int nargs) {
         pcb *ppcb = NULL;
         ppcb = &proctab[pid];
 	    ulong *saddr = ppcb->stkbase;
@@ -133,7 +133,7 @@ void testcases(void)
                      0x55555555, 0x66666666, 0x77777777, 0x88888888);
         printpcb(pid);
         // TODO: print out stack with extra args
-        printstack(pid, 8);
+        printStack(pid, 8);
         // TODO: ready(pid, RESCHED_YES, 0);
         ready(pid, RESCHED_YES, 0);
         break;
