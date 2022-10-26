@@ -48,7 +48,7 @@ ctxsw:
 	str ip, [r0, #PREG_IP*4]
 	str sp, [r0, #PREG_SP*4]
 	str lr, [r0, #PREG_LR*4]
-	str pc, [r0, #PREG_LR*4]
+	str lr, [r0, #PREG_PC*4]
 
 	// TODO: Restore callee-save ("non-volatile") registers.
 	mov ip, r1

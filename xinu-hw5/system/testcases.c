@@ -35,6 +35,7 @@ int testmain(int argc, char **argv)
 
         /* Uncomment the resched() line for cooperative scheduling. */
        	resched();
+        
     }
     return 0;
 }
@@ -95,7 +96,7 @@ void printStack(int pid, int nargs) {
         kprintf("\nStack:\r\n");
 
         int i;
-        for(i=0; i<(nargs+PREGS); i++) {
+        for(i=0; i<(nargs); i++) {
             kprintf("0x%08x:\t0x%08x     \r\n", saddr, *saddr);
 		    saddr--;
         }
@@ -145,14 +146,15 @@ void testcases(void)
         ready(create((void *)testmain, INITSTK, "MAIN3", 2, 0, NULL), RESCHED_YES, 0);
         break;
 	
-	case '3':
-		// Create 3 processes and ready them on cores 1, 2, 3
-		ready(create((void *)testmain, INITSTK, "MAIN1", 2, 0, NULL), RESCHED_NO, 1);
-		ready(create((void *)testmain, INITSTK, "MAIN2", 2, 0, NULL), RESCHED_NO, 2);
-		ready(create((void *)testmain, INITSTK, "MAIN3", 2, 0, NULL), RESCHED_NO, 3);
-		break;
-	default:
-		break;
+    case '3':
+	// Create 3 processes and ready them on cores 1, 2, 3
+	ready(create((void *)testmain, INITSTK, "MAIN1", 2, 0, NULL), RESCHED_NO, 1);
+	ready(create((void *)testmain, INITSTK, "MAIN2", 2, 0, NULL), RESCHED_NO, 2);
+	ready(create((void *)testmain, INITSTK, "MAIN3", 2, 0, NULL), RESCHED_NO, 3);
+	break;
+
+    default:
+	break;
     }
 
     kprintf("\r\n===TEST END===\r\n");
