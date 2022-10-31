@@ -6,6 +6,14 @@
  */
 /* Embedded XINU, Copyright (C) 2008.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 6
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 extern void ctxsw(void *, void *);
@@ -33,21 +41,21 @@ syscall resched(void)
     // TODO: Implement aging.
     //
     //       Reference include/clock.h to find more information
-    //       about the quantums and how aging should behave.
-
-    promote_medium[cpuid]--;
+    //       about the quantums and how aging should behave.    
     // couple if statements
     //couple enqueues and dequeues
 
+    promote_medium[cpuid]--;
     if(promote_medium[cpuid] <= 0) {
-        if(nonempty(readylist[cpuid][PRIORITY_MEDIUM])) {
-            enqueue(dequeue(readylist[cpuid][PRIORITY_MEDIUM]), readylist[cpuid][PRIORITY_HIGH]);
+        if(nonempty(readylist[cpuid][PRIORITY_MED])) {
+            enqueue(dequeue(readylist[cpuid][PRIORITY_MED]), readylist[cpuid][PRIORITY_HIGH]);
         }
         promote_low[cpuid]--;
         if(promote_low[cpuid] <= 0) {
             if(nonempty(readylist[cpuid][PRIORITY_LOW])) {
-                enqueue(dequeue(readylist[cpuid][PRIORITY_LOW]), readylist[cpuid][PRIORITY_MEDIUM]);
+                enqueue(dequeue(readylist[cpuid][PRIORITY_LOW]), readylist[cpuid][PRIORITY_MED]);
             }
+            promote_low[cpuid] = QUANTUM;
         }
         promote_medium[cpuid] = QUANTUM;
     }

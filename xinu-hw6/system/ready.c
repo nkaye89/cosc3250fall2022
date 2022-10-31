@@ -6,6 +6,14 @@
  */
 /* Embedded XINU, Copyright (C) 2008.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 6
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 /**
@@ -46,7 +54,7 @@ syscall ready(pid_typ pid, bool resch, uint core)
     //       The core_affinity and priority are values you should 
     //       be able to get from the process's process control block.
     
-    enqueue(pid, readylist[ppcb->core_affinity][ppcb->priority])   //one line
+    enqueue(pid, readylist[ppcb->core_affinity][ppcb->priority]);   //one line
 
 
 
