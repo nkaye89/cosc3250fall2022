@@ -25,6 +25,17 @@ void printpid(int times)
     }
 }
 
+void printLoop()
+{
+    uint cpuid = getcpuid();
+
+    enable();
+    while(TRUE) {
+        kprintf("This is process %d\r\n", currpid[cpuid]);
+        udelay(40);
+    }
+}
+
 /**
  * testcases - called after initialization completes to test things.
  */
@@ -64,15 +75,25 @@ void testcases(void)
 
         // TODO: Create a testcase that demonstrates aging 
         //while loop (one thing to print is the id of the running proc)
-
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_MED, "PRINTER-A", 1
+               ), RESCHED_NO, 0);
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_LOW, "PRINTER-B", 1
+               ), RESCHED_YES, 0);
 
 #else
         // STARVING TESTCASE
         kprintf("\r\nAGING is not currently enabled.\r\n");
 
         // TODO: Create a testcase that demonstrates starvation
-
-
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-A", 1
+               ), RESCHED_NO, 0);
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_LOW, "PRINTER-B", 1
+               ), RESCHED_YES, 0);
+        //second proc should never run
 #endif
         break;
 
@@ -83,10 +104,23 @@ void testcases(void)
         kprintf("\r\nPreemption is enabled.\r\n");
 
         // TODO: Create a testcase that demonstrates preemption
-
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-A", 1
+               ), RESCHED_NO, 0);
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-B", 1
+               ), RESCHED_NO, 0);
+        //both procs should print switching off
 
 #else
         kprintf("\r\nPreemption is not currently enabled...\r\n");
+
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-A", 1
+               ), RESCHED_NO, 0);
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-B", 1
+               ), RESCHED_NO, 0);
 #endif
         break;
 
