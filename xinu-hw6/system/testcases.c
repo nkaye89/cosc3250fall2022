@@ -76,10 +76,16 @@ void testcases(void)
         // TODO: Create a testcase that demonstrates aging 
         //while loop (one thing to print is the id of the running proc)
         ready(create
-              ((void *)printLoop, INITSTK, PRIORITY_MED, "PRINTER-A", 1
+              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-A", 1
                ), RESCHED_NO, 0);
         ready(create
-              ((void *)printLoop, INITSTK, PRIORITY_LOW, "PRINTER-B", 1
+              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-B", 1
+               ), RESCHED_YES, 0);
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_MED, "PRINTER-C", 1
+               ), RESCHED_YES, 0);
+        ready(create
+              ((void *)printLoop, INITSTK, PRIORITY_LOW, "PRINTER-D", 1
                ), RESCHED_YES, 0);
 
 #else
@@ -115,12 +121,6 @@ void testcases(void)
 #else
         kprintf("\r\nPreemption is not currently enabled...\r\n");
 
-        ready(create
-              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-A", 1
-               ), RESCHED_NO, 0);
-        ready(create
-              ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-B", 1
-               ), RESCHED_NO, 0);
 #endif
         break;
 
