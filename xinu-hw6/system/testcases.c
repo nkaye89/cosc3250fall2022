@@ -30,9 +30,9 @@ void printLoop()
     uint cpuid = getcpuid();
 
     enable();
-    while(TRUE) {
+    for(int i = 0; i < 1,000,000; i++) {
         kprintf("This is process %d\r\n", currpid[cpuid]);
-        udelay(40);
+        udelay(1);
     }
 }
 
