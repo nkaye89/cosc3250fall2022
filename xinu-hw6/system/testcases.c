@@ -80,10 +80,10 @@ void testcases(void)
                ), RESCHED_NO, 0);
         ready(create
               ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-B", 1
-               ), RESCHED_YES, 0);
+               ), RESCHED_NO, 0);
         ready(create
               ((void *)printLoop, INITSTK, PRIORITY_MED, "PRINTER-C", 1
-               ), RESCHED_YES, 0);
+               ), RESCHED_NO, 0);
         ready(create
               ((void *)printLoop, INITSTK, PRIORITY_LOW, "PRINTER-D", 1
                ), RESCHED_YES, 0);
@@ -115,7 +115,7 @@ void testcases(void)
                ), RESCHED_NO, 0);
         ready(create
               ((void *)printLoop, INITSTK, PRIORITY_HIGH, "PRINTER-B", 1
-               ), RESCHED_NO, 0);
+               ), RESCHED_YES, 0);
         //both procs should print switching off
 
 #else

@@ -31,8 +31,8 @@ syscall ready(pid_typ pid, bool resched, uint core);
 syscall resched(void);
 
 /* Kernel constants */
-#define PREEMPT		FALSE    /* preemptive rescheduling                      */
-#define AGING		FALSE    /* queue aging prevents starvation      */
+#define PREEMPT		TRUE    /* preemptive rescheduling                      */
+#define AGING		TRUE    /* queue aging prevents starvation      */
 
 /* Assertions */
 #define ASSERT(cond)              if ( !(cond) ) return SYSERR
