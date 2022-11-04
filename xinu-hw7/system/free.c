@@ -1,3 +1,10 @@
+//1. create.c: atomic increment - done
+//      use getmem instead of getstk
+//2. getmem() - implement first
+//3. freemem() - implement second
+//4. malloc(), free() - implement last ("about 5 lines each" - sabirat)
+//5. testcases.c
+
 /**
  * @file free.c
  */
@@ -17,12 +24,13 @@
 syscall free(void *ptr)
 {
     struct memblock *block;
-
+    //block--;
 	/* TODO:
      *      1) set block to point to memblock to be free'd (ptr)
      *      2) find accounting information of the memblock
      *      3) call freemem on the block with its length
      */
+    //freemem(): deallocates memor and keep memory back in freelist
 
     return OK;
 }

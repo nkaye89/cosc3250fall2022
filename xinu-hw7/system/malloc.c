@@ -29,13 +29,15 @@ void *malloc(ulong size)
         return NULL;
     }
 
+    //size+=size of accounting block (sizeof(memblk))
+    //pmem=getmem(size)=allocates memory from freelist
 	/** TODO:
       *      1) Make room for accounting info
       *      2) Acquire memory with getmem
       *         - handle possible error (SYSERR) from getmem...
       *      3) Set accounting info in pmem
       */  
-
+    //pmem->next and length
 
     return (void *)(pmem + 1);  /* +1 to skip accounting info */
 }
