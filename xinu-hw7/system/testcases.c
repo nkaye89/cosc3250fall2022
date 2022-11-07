@@ -97,11 +97,47 @@ void testcases(void)
         printList(getcpuid());
 
         //get 10 bytes
-        getmem((ulong)100);
+        getmem((ulong)10);
         printList(getcpuid());
 
         break;
     case '2':
+        printList(getcpuid());
+
+        //get 100 bytes
+        memblk *block = getmem((ulong)100);
+        printList(getcpuid());
+
+        //free 100 bytes
+        freemem(block, (ulong)100);
+        printList(getcpuid());
+
+        break;
+
+    case '3':
+        printList(getcpuid());
+
+        //malloc 100 bytes
+        malloc((ulong)100);
+        printList(getcpuid());
+
+        //malloc 500 bytes
+        malloc((ulong)500);
+        printList(getcpuid());
+
+        //mallc 1000 bytes
+        malloc((ulong)1000);
+        printList(getcpuid());
+
+        //malloc 1 bytes
+        malloc((ulong)1);
+        printList(getcpuid());
+
+
+        break;
+    case '4':
+        //todo
+        //test free
 
         break;
     default:
