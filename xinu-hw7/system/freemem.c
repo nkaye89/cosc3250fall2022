@@ -55,6 +55,87 @@ syscall freemem(void *memptr, ulong nbytes)
      *      - if head freemem = end of fremem, combine and update next
      */
 
+//  DETERMINE CORRECT FREELIST
+	int i;
+    int cpuid = -1;
+    ulong startaddr, endaddr;
+
+    for(i = 0; i <= 3; i++) { // Loop through 4 core values
+        startaddr = freelist[i].base;   // Get start address of freelist
+        endaddr = freelist[i].base + freelist[i].bound;  // Get end address of freelist
+		if( (ulong)block >= startaddr  &&  (ulong)block <= endaddr )      {
+            // Check if block addr within freelist address range
+            cpuid = i;      // Set cpuid
+            break;          // Escape loop
+        }
+    }
+    if( cpuid == -1 )       {       // Error checking
+        restore(im);
+        return SYSERR;
+    }
+    
+//  ACQUIRE MEMLOCK
+	lock_acquire(freelist[cpuid].memlock);
+
+//  FIND WHERE MEMBLOCK GOES
+ 	// Initialize prev, next
+	prev = (memblk *)&freelist[cpuid];
+	next = freelist[cpuid].head;
+	while( block > next )	{		// Stop loop when in between prev and next
+							//stops when block is behind next
+		prev = next;
+		next = next->next;
+	}
+
+//  FIND TOP OF PREV MEMBLOCK
+	if( (ulong)prev == (ulong)&freelist[cpuid] )	{ // If desired block is behind head of freelist
+		top = NULL;
+	}
+	else	{
+		top = (ulong)prev + (prev->length);
+	}
+
+//  CHECK FOR OVERLAP
+	// Check overlap with previous block
+	if( (ulong)block < top )	{ 
+		lock_release(freelist[cpuid].memlock);
+		restore(im);
+		return SYSERR;
+	}
+	// Check overlap with next block
+	else if( ( next != NULL ) && (((ulong)block + block->length) > (ulong)next) )	{ 
+		lock_release(freelist[cpuid].memlock);
+		restore(im);
+		return SYSERR;
+	}
+	
+	// Place block into freelist if no overlap
+	/*if(top == NULL)	{	// DELETEME?
+		freelist[cpuid].head = block;
+	}*/
+	prev->next = block;
+	block->next = next;
+	block->length = nbytes;
+
+//  COALESCE
+	// Calculate the top addresses of prev and block
+	ulong prevTop = (ulong)prev + (prev->length);
+	ulong blockTop = (ulong)block + (block->length);
+
+	if((ulong)block == prevTop) { // Coalesce with prev block
+		prev->length += block->length;
+		prev->next = next;
+		block = prev;
+	}
+	
+	if(blockTop  == (ulong)next)	{ // Coalesce with next block
+		block->next = next->next;
+		block->length += next->length;
+	}
+
+// END FREEMEM
+    freelist[cpuid].length += nbytes; // This resizes freelist
+	lock_release(freelist[cpuid].memlock);
 	restore(im);
     return OK;
 }

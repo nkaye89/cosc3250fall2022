@@ -46,6 +46,50 @@ void *getmem(ulong nbytes)
      *      - return memory address if successful
      */
 
+    //get memblocks
+	uint cpuid = getcpuid();
+    prev = (memblk *)&freelist[cpuid];
+	curr = (memblk *)freelist[cpuid].head;
+    
+    //lock freelist
+    lock_acquire(freelist[cpuid].memlock);
+
+    //find memblock
+    while(curr != NULL) {
+		// If block is larger than nbytes, MOST LIKELY
+		if(curr->length > nbytes)	{
+			leftover = (memblk *)((ulong)curr + nbytes);	// Create new memblock
+			leftover->next = curr->next;
+			leftover->length = curr->length - nbytes;
+
+			// Memblock element allocation
+			prev->next = leftover;
+			curr->length = nbytes;
+
+			// Recalculate freelist length
+			freelist[cpuid].length -= nbytes;
+
+			lock_release(freelist[cpuid].memlock); // Release lock
+			restore(im);	// MAYBE?
+			return (void *)curr; // Return the address of the memblock			
+		}
+		// If block is exactly nbytes
+		else if(curr->length == nbytes)	{
+			prev->next = curr->next; // Remove block from freelist
+			freelist[cpuid].length -= nbytes; // Resize freelist length
+			
+			lock_release(freelist[cpuid].memlock); // Release lock
+			restore(im);	// MAYBE?
+			return (void *)curr; // Return the address 
+		}
+		// If nbytes doesn't fit, continue traversal
+		else	{
+			prev = curr;
+			curr = curr->next;
+		}
+    }
+
+    lock_release(freelist[cpuid].memlock);
     restore(im);
     return (void *)SYSERR;
 }
