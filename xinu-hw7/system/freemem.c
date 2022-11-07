@@ -77,7 +77,7 @@ syscall freemem(void *memptr, ulong nbytes)
 //  ACQUIRE MEMLOCK
 	lock_acquire(freelist[cpuid].memlock);
 
-//  FIND WHERE MEMBLOCK GOES
+//  FIND WHERE MEMBLOCK SHOULD GO
  	// Initialize prev, next
 	prev = (memblk *)&freelist[cpuid];
 	next = freelist[cpuid].head;

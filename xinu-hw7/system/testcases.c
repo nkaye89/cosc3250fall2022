@@ -36,21 +36,6 @@ void printLoop()
     }
 }
 
-void printList()
-{
-    uint cpuid = getcpuid();
-    enable();
-    memblk *node = freelist[cpuid].head;
-    kprintf("freeList on core %d:\r\n"+ cpuid);
-    kprintf("base: %lu, current length: %lu\r\n", freelist[cpuid].base, freelist[cpuid].length);
-    int cnt = 1;
-    while(node != NULL) {
-        kprintf("|memblock list|\r\nLength of memblock %d: %lu\t", cnt, node->length);
-        cnt++;
-        node = node->next;
-    }
-}
-
 void testGetmem()
 {
     printList();
@@ -62,19 +47,19 @@ void testGetmem()
     printList();
 }
 
-void printFreelist(int core)	{
+void printList(int core)	{
 	memblk *curr;
 	curr = freelist[core].head;
 
-	kprintf("-=-=-=-=-START PRINT-=-=-=-=-\r\n");
+	kprintf("\nSTART PRINT\r\n");
 	while(curr != NULL)	{
-		kprintf("\r\nAddr: %d \r\n", curr);
+		kprintf("\r\nAddress: %d \r\n", curr);
 		kprintf("Length: %d \r\n", curr->length);
-		kprintf("End Addr: %d \r\n", ((ulong)(curr) + (curr->length)));
-		kprintf("-----------------\r\n");
+		kprintf("End Address: %d \r\n", ((ulong)(curr) + (curr->length)));
+		//kprintf("-----------------\r\n");
 		curr = curr->next;
 	}
-	kprintf("-=-=-=-=-END PRINT-=-=-=-=-\r\n");
+	kprintf("END PRINT\r\n");
 	
 }
 
@@ -88,7 +73,9 @@ void testcases(void)
     kprintf("===TEST BEGIN===\r\n");
     kprintf("0) Test printLoop\r\n");
     kprintf("1) getmem testcase\r\n");
-    kprintf("2) Preemption testcase\r\n");
+    kprintf("2) freemem testcase\r\n");
+    kprintf("3) malloc testcase\r\n");
+    kprintf("4) free testcase\r\n");
 
     // TODO: Test your operating system!
 
@@ -99,13 +86,20 @@ void testcases(void)
         /*ready(create
               ((void *)printList, INITSTK, PRIORITY_HIGH, "PRINTER-A", 1
                ), RESCHED_YES, 0);*/
-        printFreelist(getcpuid());
+        printList(getcpuid());
         
         break;
     case '1':
-        ready(create
-              ((void *)testGetmem, INITSTK, PRIORITY_HIGH, "PRINTER-A", 1
-               ), RESCHED_YES, 0);
+        printList(getcpuid());
+
+        //get 100 bytes
+        getmem((ulong)100);
+        printList(getcpuid());
+
+        //get 10 bytes
+        getmem((ulong)100);
+        printList(getcpuid());
+
         break;
     case '2':
 

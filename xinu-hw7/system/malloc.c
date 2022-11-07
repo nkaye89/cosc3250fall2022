@@ -38,6 +38,19 @@ void *malloc(ulong size)
       *      3) Set accounting info in pmem
       */  
     //pmem->next and length
+    
+    //make room for accounting info
+    size = size + sizeof(memblk);
+
+    //acquire memory with getmem
+    pmem = (memblk *)getmem(size);
+    if( (uint)pmem == SYSERR)	{ // Error check
+		return NULL;
+	}
+
+    //set accounting info in pmem
+    pmem->next = pmem;  //  MAYBE???
+	pmem->length = size;
 
     return (void *)(pmem + 1);  /* +1 to skip accounting info */
 }
