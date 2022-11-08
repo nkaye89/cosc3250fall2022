@@ -23,7 +23,7 @@ extern int _atomic_increment_mod(int *, int);
 
 static pid_typ newpid(void);
 void userret(void);
-void *getstk(ulong);
+//void *getstk(ulong);
 
 /**
  * Create a new process to start running a function.
@@ -48,7 +48,7 @@ syscall create(void *funcaddr, ulong ssize, ulong priority, char *name, ulong na
 		ssize = MINSTK;
 	ssize = (ulong)(ssize + 3) & 0xFFFFFFFC;
 	/* round up to even boundary    */
-	saddr = (ulong *)getmem(ssize);
+	 saddr = (ulong *)getmem(ssize);
 	// saddr = (ulong *)getstk(ssize);     /* allocate new stack and pid   */
 	pid = newpid();
 	/* a little error checking      */

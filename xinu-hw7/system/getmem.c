@@ -60,6 +60,7 @@ void *getmem(ulong nbytes)
 		if(curr->length > nbytes)	{
 			leftover = (memblk *)((ulong)curr + nbytes);	// Create new memblock
 			leftover->next = curr->next;
+			//curr->next = NULL;
 			leftover->length = curr->length - nbytes;
 
 			// Memblock element allocation
@@ -76,6 +77,7 @@ void *getmem(ulong nbytes)
 		// If block is exactly nbytes
 		else if(curr->length == nbytes)	{
 			prev->next = curr->next; // Remove block from freelist
+			//curr->next = NULL;
 			freelist[cpuid].length -= nbytes; // Resize freelist length
 			
 			lock_release(freelist[cpuid].memlock); // Release lock

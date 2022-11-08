@@ -30,7 +30,21 @@ syscall free(void *ptr)
      *      2) find accounting information of the memblock
      *      3) call freemem on the block with its length
      */
-    //freemem(): deallocates memor and keep memory back in freelist
+    //freemem(): deallocates memory and puts memory back in freelist
+    
+    //  SET BLOCK TO POINT TO MEMBLOCK TO BE FREED
+    block = (memblk *)ptr;
+
+    //  FIND ACCOUNTING INFO OF MEMBLOCK
+    //block = (memblk *)((ulong)block - sizeof(memblk));
+    block--;
+    //check err
+	if(block->next != block)	{
+		return SYSERR;
+	}
+
+    //  CALL FREEMEM ON BLOCK W/ ITS LENGTH
+    freemem(block, block->length);
 
     return OK;
 }
