@@ -49,7 +49,6 @@ syscall create(void *funcaddr, ulong ssize, ulong priority, char *name, ulong na
 	ssize = (ulong)(ssize + 3) & 0xFFFFFFFC;
 	/* round up to even boundary    */
 	 saddr = (ulong *)getmem(ssize);
-	 saddr = saddr+ssize-sizeof(memblk);
 	// saddr = (ulong *)getstk(ssize);     /* allocate new stack and pid   */
 	pid = newpid();
 	/* a little error checking      */
@@ -72,6 +71,7 @@ syscall create(void *funcaddr, ulong ssize, ulong priority, char *name, ulong na
 	strncpy(ppcb->name, name, strlen(name)); // set the name provided (char* name) using strncpy() = strncpy(ppcb->name, name)
 
 	// Initialize stack with accounting block
+	saddr = ((ulong)saddr)+ssize-sizeof(memblk);
 	*saddr = STACKMAGIC; 						// indicates that it's a stack, defined constant number
 	*--saddr = pid;		 						// processor id
 	*--saddr = ppcb->stklen; 					// stack length
