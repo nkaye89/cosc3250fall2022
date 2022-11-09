@@ -57,7 +57,7 @@ syscall freemem(void *memptr, ulong nbytes)
 
 //  DETERMINE CORRECT FREELIST
 	int i;
-    int cpuid = -1;
+    uint cpuid = -1;
     ulong startaddr, endaddr;
 
     for(i = 0; i <= 3; i++) { // Loop through 4 core values
@@ -81,7 +81,7 @@ syscall freemem(void *memptr, ulong nbytes)
  	// Initialize prev, next
 	prev = (memblk *)&freelist[cpuid];
 	next = freelist[cpuid].head;
-	while( block > next )	{		// Stop loop when in between prev and next
+	while( block > next && next != NULL )	{		// Stop loop when in between prev and next
 							//stops when block is behind next
 		prev = next;
 		next = next->next;
@@ -103,29 +103,25 @@ syscall freemem(void *memptr, ulong nbytes)
 		return SYSERR;
 	}
 	// Check overlap with next block
-	else if( ( next != NULL ) && (((ulong)block + block->length) > (ulong)next) )	{ 
+	else if( ( next != NULL ) && (((ulong)block + nbytes) > (ulong)next) )	{ 
 		lock_release(freelist[cpuid].memlock);
 		restore(im);
 		return SYSERR;
 	}
-	
-	// Place block into freelist if no overlap
-	/*if(top == NULL)	{	// DELETEME?
-		freelist[cpuid].head = block;
-	}*/
-	prev->next = block;
-	block->next = next;
-	block->length = nbytes;
 
 //  COALESCE
 	// Calculate the top addresses of prev and block
 	ulong prevTop = (ulong)prev + (prev->length);
-	ulong blockTop = (ulong)block + (block->length);
+	ulong blockTop = (ulong)block + (nbytes);
 
 	if((ulong)block == prevTop) { // Coalesce with prev block
-		prev->length += block->length;
+		prev->length += nbytes;
 		prev->next = next;
 		block = prev;
+	}else {
+		prev->next = block;
+		block->next = next;
+		block->length = nbytes;
 	}
 	
 	if(blockTop  == (ulong)next)	{ // Coalesce with next block

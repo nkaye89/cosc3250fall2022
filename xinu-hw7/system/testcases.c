@@ -25,6 +25,7 @@ void printpid(int times)
     }
 }
 
+/*
 void printLoop()
 {
     uint cpuid = getcpuid();
@@ -35,19 +36,9 @@ void printLoop()
         udelay(40);
     }
 }
+*/
 
-void testGetmem()
-{
-    printList();
-    getmem(50);
-    printList();
-    getmem(75);
-    printList();
-    getmem(25);
-    printList();
-}
-
-void printList(int core)	{
+void printList(uint core)	{
 	memblk *curr;
 	curr = freelist[core].head;
 
@@ -76,6 +67,8 @@ void testcases(void)
     kprintf("2) freemem testcase\r\n");
     kprintf("3) malloc testcase\r\n");
     kprintf("4) free testcase\r\n");
+    kprintf("5) coalesce with prev testcase\r\n");
+    kprintf("6) coalesce with both testcase\r\n");
 
     // TODO: Test your operating system!
 
@@ -105,11 +98,11 @@ void testcases(void)
         printList(getcpuid());
 
         //get 100 bytes
-        memblk *block = getmem((ulong)100);
+        memblk *block = getmem((ulong)4096);
         printList(getcpuid());
 
         //free 100 bytes
-        freemem(block, (ulong)100);
+        freemem(block, (ulong)4096);
         printList(getcpuid());
 
         break;
@@ -136,8 +129,81 @@ void testcases(void)
 
         break;
     case '4':
-        //todo
-        //test free
+        printList(getcpuid());
+
+        kprintf("malloc 4096 bytes");
+        //malloc 1000 bytes
+        void * blk = malloc((ulong)4096);
+        printList(getcpuid());
+
+        kprintf("free 4096 bytes");
+        //free 1000 bytes
+        free((void *)blk);
+        printList(getcpuid());
+
+        break;
+    case '5':
+    //coalesce with prev testcase
+        printList(getcpuid());
+
+        kprintf("\nmalloc 1000 bytes\r");
+        //malloc 256 bytes
+        malloc((ulong)1000);
+        printList(getcpuid());
+        
+        kprintf("\nmalloc 100 bytes\r");
+        //malloc 32 bytes - going to free this one
+        void * blk1 = malloc((ulong)100);
+        printList(getcpuid());
+        
+        kprintf("\nmalloc 100 bytes\r");
+        //malloc 32 bytes
+        void * blk2 = malloc((ulong)100);
+        printList(getcpuid());
+
+        kprintf("\nmalloc 100 bytes\r");
+        //malloc 32 bytes
+        void * blk3 = malloc((ulong)100);
+        printList(getcpuid());
+
+        kprintf("\nmalloc 1000 bytes\r");
+        //malloc 256 bytes
+        malloc((ulong)1000);
+        printList(getcpuid());
+
+        kprintf("\nfree first 100\r");
+        //free 32 byets
+        free((void *)blk1);
+        printList(getcpuid());
+
+        kprintf("\nfree scond 100 (should coalesce with previous blk)\r");
+        //free 32 bytes
+        free((void *)blk2);
+        printList(getcpuid());
+
+        kprintf("\nfree 100\r");
+        //free 32 byets
+        free((void *)blk3);
+        printList(getcpuid());
+
+        break;
+        case '6':
+
+        printList(getcpuid());
+
+        kprintf("\nmalloc 4096 bytes\r");
+        void * blck1 = malloc((ulong)4096);
+
+        kprintf("\nmalloc 4096 bytes\r");
+        void * blck2 = malloc((ulong)4096);
+
+        kprintf("\nfree 4096 bytes\r");
+        free(blck1);
+
+        kprintf("\nfree 4096 bytes\r");
+        free(blck2);
+        
+        printList(getcpuid());
 
         break;
     default:
