@@ -33,5 +33,34 @@ syscall sendnow(int pid, message msg)
  	* - Return OK
  	*/
 
+
+	ppcb = &proctab[pid];
+	lock_acquire(ppcb->msg_var.core_com_lock);
+
+	//	CHECK PID
+	if(isbadpid(pid)) {
+		lock_release(ppcb->msg_var.core_com_lock);
+		return SYSERR;
+	}
+	//set ppcb if not bad
+
+
+	//	ACQUIRE LOCK
+	lock_acquire(ppcb->msg_var.core_com_lock);
+
+	//	CHECK PROCESS STATE
+	if(ppcb->state == PRFREE || ppcb->msg_var.hasMessage) {
+		lock_release(ppcb->msg_var.core_com_lock);
+		return SYSERR;
+	}
+
+	//depositing message (don't know if we have to check if empty)
+	ppcb->msg_var.msgin = msg;
+	ppcb->msg_var.hasMessage = TRUE;
+
+	if(ppcb->state == PRRECV) {
+		ready(pid, RESCHED_NO, ppcb->core_affinity);
+	}
+
 	return OK;
 }
