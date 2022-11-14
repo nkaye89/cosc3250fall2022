@@ -31,6 +31,41 @@ syscall send(int pid, message msg)
  	* - return ok.
  	*/
 
-	
-	return OK;
+ 	// PID Error checking
+	if (isbadpid(pid))	{
+		return SYSERR;
+	}
+
+	// Acquire receiving process lock
+	lock_acquire(rpcb->msg_var.core_com_lock);
+
+	// Set pcbs
+	rpcb = &proctab[pid];
+	spcb = &proctab[currpid[getcpuid()]];
+
+	if (rpcb->state == PRFREE) {					// check state
+		lock_release(rpcb->msg_var.core_com_lock);	// release lock
+		return SYSERR;								// return error
+	}
+
+	if (rpcb->msg_var.hasMessage == TRUE) {			// check for msg
+		spcb->state = PRSEND; 						// block sending process
+		spcb->msg_var.msgout = msg; 				// put msg into msgout
+		
+		enqueue(currpid[getcpuid()], rpcb->msg_var.msgqueue); // Put proc into rpcb queue
+		lock_release(rpcb->msg_var.core_com_lock);			  // release lock
+		resched();										      // call resched
+		
+		return OK;
+	}
+	else {
+		rpcb->msg_var.msgin = msg;							// Deposit message
+		rpcb->msg_var.hasMessage = TRUE;					// set message flag
+		if (rpcb->state == PRRECV) {
+			ready(pid, RESCHED_YES, rpcb->core_affinity);	// ready proc
+		}
+		lock_release(rpcb->msg_var.core_com_lock);			// release lock
+
+		return OK;		
+	}
 }

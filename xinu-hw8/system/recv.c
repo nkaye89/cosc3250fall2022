@@ -36,6 +36,39 @@ message recv(void)
  	*   return collected message
  	*/	
 	
+ 	// Acquire lock
+	lock_acquire(ppcb->msg_var.core_com_lock);
+
+	// Check for message
+	if (ppcb->msg_var.hasMessage == FALSE )	{
+		ppcb->state = PRRECV; 						// put in blocking state
+		resched();									// resched
+		lock_release(ppcb->msg_var.core_com_lock);  // release lock
+	}
+	else {
+		msg = ppcb->msg_var.msgin; 					// retrieve message
+		ppcb->msg_var.hasMessage = FALSE;			// update flag
+		lock_release(ppcb->msg_var.core_com_lock);  // release lock
+	}
+	
+	// Check for more messages from queue
+	senderpid = dequeue(ppcb->msg_var.msgqueue); 	// get sender PID
+
+	if(senderpid != EMPTY)	{
+		pcb *msgProc;
+		msgProc = &proctab[senderpid]; 				// get sender pcb
+
+		ppcb->msg_var.msgin = msgProc->msg_var.msgout; // deposit message
+		ppcb->msg_var.hasMessage = TRUE; 			   // set message flag
+		msgProc->msg_var.msgout = NULL;				   // remove proc
+		
+		lock_release(ppcb->msg_var.core_com_lock);			  // release lock
+		ready(senderpid, RESCHED_NO, msgProc->core_affinity); // ready send proc
+	}
+	else	{
+		ppcb->msg_var.hasMessage = FALSE; 			// reset message flag
+		lock_release(ppcb->msg_var.core_com_lock);  // release lock
+	}
 
 	return msg;
 }
