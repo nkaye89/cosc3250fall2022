@@ -86,11 +86,13 @@ void testcases(void)
     case '2':
 
         break;
-
     case '3':
         
         break;
- 
+    default:
+        break;
+    }
+    
     kprintf("\r\n===TEST END===\r\n");
     return;
 }

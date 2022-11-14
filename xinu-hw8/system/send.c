@@ -31,6 +31,10 @@ syscall send(int pid, message msg)
  	* - return ok.
  	*/
 
+	// Set pcbs
+	rpcb = &proctab[pid];
+	spcb = &proctab[currpid[getcpuid()]];
+
  	// PID Error checking
 	if (isbadpid(pid))	{
 		return SYSERR;
@@ -39,10 +43,7 @@ syscall send(int pid, message msg)
 	// Acquire receiving process lock
 	lock_acquire(rpcb->msg_var.core_com_lock);
 
-	// Set pcbs
-	rpcb = &proctab[pid];
-	spcb = &proctab[currpid[getcpuid()]];
-
+	//set values of pcbs
 	if (rpcb->state == PRFREE) {					// check state
 		lock_release(rpcb->msg_var.core_com_lock);	// release lock
 		return SYSERR;								// return error
