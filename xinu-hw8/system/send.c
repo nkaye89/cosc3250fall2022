@@ -54,14 +54,14 @@ syscall send(int pid, message msg)
 		
 		enqueue(currpid[getcpuid()], rpcb->msg_var.msgqueue); // Put proc into rpcb queue
 		lock_release(rpcb->msg_var.core_com_lock);			  // release lock
-		resched();										      // call resched
+		resched();										      // resched proc
 		
 		return OK;
 	}
 	else {
 		rpcb->msg_var.msgin = msg;							// Deposit message
 		rpcb->msg_var.hasMessage = TRUE;					// set message flag
-		if (rpcb->state == PRRECV) {
+		if (rpcb->state == PRRECV) {						// check state
 			ready(pid, RESCHED_YES, rpcb->core_affinity);	// ready proc
 		}
 		lock_release(rpcb->msg_var.core_com_lock);			// release lock
