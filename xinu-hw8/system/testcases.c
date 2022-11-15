@@ -10,6 +10,14 @@
  */
 /* Embedded XINU, Copyright (C) 2007.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 void printpid(int times)
@@ -68,10 +76,12 @@ void printList(uint core)	{
 void testcases(void)
 {
     kprintf("===TEST BEGIN===\r\n");
-    kprintf("0) send() testcase\r\n");
     kprintf("1) sendnow() testcase\r\n");
-    kprintf("2) recv() testcase\r\n");
+    kprintf("0) send() testcase\r\n");
+    kprintf("0) send() blocking testcase\r\n");
     kprintf("3) recvnow() testcase\r\n");
+    kprintf("2) recv() testcase\r\n");
+    kprintf("2) recv() blocking testcase\r\n");    
 
     // TODO: Test your operating system!
     uchar c = kgetc();

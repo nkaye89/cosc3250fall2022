@@ -6,6 +6,14 @@
  */
 /* Embedded Xinu, Copyright (C) 2009.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 /**
@@ -42,15 +50,12 @@ message recv(void)
 	// Check for message
 	if (ppcb->msg_var.hasMessage == FALSE )	{
 		ppcb->state = PRRECV; 						// put in blocking state
+		lock_release(ppcb->msg_var.core_com_lock);  // release lock
 		resched();									// resched
-		lock_release(ppcb->msg_var.core_com_lock);  // release lock
+		lock_acquire(ppcb->msg_var.core_com_lock);	// Acquire lock
 	}
-	else {
-		msg = ppcb->msg_var.msgin; 					// retrieve message
-		ppcb->msg_var.hasMessage = FALSE;			// update flag
-		lock_release(ppcb->msg_var.core_com_lock);  // release lock
-	}
-	
+	msg = ppcb->msg_var.msgin; 					// retrieve message
+
 	// Check for more messages from queue
 	senderpid = dequeue(ppcb->msg_var.msgqueue); 	// get sender PID
 
@@ -60,7 +65,7 @@ message recv(void)
 
 		ppcb->msg_var.msgin = msgProc->msg_var.msgout; // deposit message
 		ppcb->msg_var.hasMessage = TRUE; 			   // set message flag
-		msgProc->msg_var.msgout = NULL;				   // remove proc
+		msgProc->msg_var.msgout = EMPTY;				   // remove proc
 		
 		lock_release(ppcb->msg_var.core_com_lock);			  // release lock
 		ready(senderpid, RESCHED_NO, msgProc->core_affinity); // ready send proc

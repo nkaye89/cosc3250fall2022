@@ -5,6 +5,14 @@
  */
 /* Embedded Xinu, Copyright (C) 2020.   All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 /**
@@ -33,7 +41,7 @@ syscall sendnow(int pid, message msg)
  	* - Return OK
  	*/
 
-
+	//	SET PPCB AND ACQUIRE LOCK
 	ppcb = &proctab[pid];
 	lock_acquire(ppcb->msg_var.core_com_lock);
 
@@ -42,11 +50,6 @@ syscall sendnow(int pid, message msg)
 		lock_release(ppcb->msg_var.core_com_lock);
 		return SYSERR;
 	}
-	//set ppcb if not bad
-
-
-	//	ACQUIRE LOCK
-	lock_acquire(ppcb->msg_var.core_com_lock);
 
 	//	CHECK PROCESS STATE
 	if(ppcb->state == PRFREE || ppcb->msg_var.hasMessage) {
@@ -58,9 +61,11 @@ syscall sendnow(int pid, message msg)
 	ppcb->msg_var.msgin = msg;
 	ppcb->msg_var.hasMessage = TRUE;
 
+	//	READY IF STATE IS IN RECEIVE
 	if(ppcb->state == PRRECV) {
-		ready(pid, RESCHED_NO, ppcb->core_affinity);
+		ready(pid, RESCHED_NO, ppcb->core_affinity);	// if still has issues release lock before ready and return ok after
 	}
 
+	lock_release(ppcb->msg_var.core_com_lock);
 	return OK;
 }

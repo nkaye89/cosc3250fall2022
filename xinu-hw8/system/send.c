@@ -6,6 +6,14 @@
  */
 /* Embedded Xinu, Copyright (C) 2009.  Al rights resered. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 /**
@@ -63,9 +71,11 @@ syscall send(int pid, message msg)
 		rpcb->msg_var.msgin = msg;							// Deposit message
 		rpcb->msg_var.hasMessage = TRUE;					// set message flag
 		if (rpcb->state == PRRECV) {						// check state
+			lock_release(rpcb->msg_var.core_com_lock);
 			ready(pid, RESCHED_YES, rpcb->core_affinity);	// ready proc
+		}else {
+			lock_release(rpcb->msg_var.core_com_lock);		// release lock
 		}
-		lock_release(rpcb->msg_var.core_com_lock);			// release lock
 
 		return OK;		
 	}
