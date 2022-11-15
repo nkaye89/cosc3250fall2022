@@ -70,34 +70,95 @@ void printList(uint core)	{
 	kprintf("END PRINT\r\n");
 } */
 
+//test methods
+void testSendnow() 
+{
+    
+}
+
+void testRecvnow() 
+{
+
+}
+
+void testSend()
+{
+
+}
+
+void testRecv()
+{
+
+}
+
+void testBlocking()
+{
+
+}
+
 /**
  * testcases - called after initialization completes to test things.
  */
 void testcases(void)
 {
     kprintf("===TEST BEGIN===\r\n");
-    kprintf("1) sendnow() testcase\r\n");
-    kprintf("0) send() testcase\r\n");
-    kprintf("0) send() blocking testcase\r\n");
-    kprintf("3) recvnow() testcase\r\n");
-    kprintf("2) recv() testcase\r\n");
-    kprintf("2) recv() blocking testcase\r\n");    
+    kprintf("0) sendnow() & recvnow() testcase\r\n");
+    kprintf("1) send() & recv() testcase\r\n");
+    kprintf("2) send() queue testcase\r\n");
+    kprintf("4) recv() testcase\r\n");    
 
     // TODO: Test your operating system!
     uchar c = kgetc();
     switch (c)
     {
     case '0':
+
+        kprintf("sending message: 1\r\n");
+        ready(create
+              ((void *)sendnow, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
+               currpid[getcpuid()], 1), RESCHED_YES, 0);
+
+        message in = recvnow();
+
+        kprintf("message received: %d", in);
         
         break;
     case '1':
 
+        kprintf("sending message: 2\r\n");
+        ready(create
+              ((void *)send, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
+               currpid[getcpuid()], 2), RESCHED_YES, 0);
+
+        message in1 = recv();
+
+        kprintf("message received: %d", in1);
+
         break;
     case '2':
+
+        ready(create
+              ((void *)send, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
+               currpid[getcpuid()], 3), RESCHED_YES, 0);
+        ready(create
+              ((void *)sendnow, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
+               currpid[getcpuid()], 4), RESCHED_YES, 0);
+
+        message in2 = recv();
+        message in3 = recvnow();
+
+        kprintf("1st message received: %d\r\n", in2);
+        kprintf("2nd message received: %d", in3);
 
         break;
     case '3':
         
+        break;
+    case '4':
+
+        break;
+    case '5':
+
         break;
     default:
         break;
