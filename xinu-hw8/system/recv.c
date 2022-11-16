@@ -64,7 +64,7 @@ message recv(void)
 		msgProc = &proctab[senderpid]; 				// get sender pcb
 
 		ppcb->msg_var.msgin = msgProc->msg_var.msgout; // deposit message
-		ppcb->msg_var.hasMessage = TRUE; 			   // set message flag
+		//ppcb->msg_var.hasMessage = TRUE; 			   // set message flag	(Sabirat said to take this out)
 		msgProc->msg_var.msgout = EMPTY;				   // remove proc
 		
 		lock_release(ppcb->msg_var.core_com_lock);			  // release lock

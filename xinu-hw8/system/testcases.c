@@ -52,9 +52,10 @@ void testRecvnow()
 
 }
 
-void testSend()
+void testSend(pid_typ pid)
 {
-
+    send(pid, 123);
+    send(pid, 456);
 }
 
 void testRecv()
@@ -74,6 +75,16 @@ void receiveMsg()
 
 }
 
+void receiveMessage()
+{
+    kprintf("receiving message 1\r\n");
+    message rec1 = recv();
+    kprintf("receiving message 2\r\n");
+    message rec2 = recv();
+
+    kprintf("message 1: %d\r\nmessage 2:%d\r\n", rec1, rec2);
+}
+
 void killFunc(ulong pid) {
     kill(pid);
 }
@@ -86,8 +97,7 @@ void testcases(void)
     kprintf("===TEST BEGIN===\r\n");
     kprintf("0) sendnow() & recvnow() testcase\r\n");
     kprintf("1) send() & recv() testcase\r\n");
-    kprintf("2) send() queue testcase\r\n");
-    kprintf("4) recv() testcase\r\n");    
+    kprintf("2) send() queue testcase\r\n");  
 
     // TODO: Test your operating system!
     uchar c = kgetc();
@@ -95,16 +105,17 @@ void testcases(void)
     {
     case '0':
 
-        /*kprintf("sending message: 1\r\n");
+        kprintf("sending message: 1 (from PROCESS-A with sendnow)\r\n");
         ready(create
               ((void *)sendnow, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
                currpid[getcpuid()], 1), RESCHED_YES, 0);
-
-        message in = recvnow();
-
-        kprintf("message received: %d", in);*/
-
         
+        kprintf("receiving message in current process with recvnow\r\n");
+        message in = recvnow();
+        
+        kprintf("message received: %d", in);
+
+        /*
         //this is from assignment 8 word doc.
         apid = 0;
         testpid = create((void*) receiveMsg, INITSTK, PRIORITY_LOW, "RECV", 0);
@@ -119,16 +130,18 @@ void testcases(void)
             ppcb->msg_var.hasMessage, ppcb->msg_var.msgin);
         }
         kill(apid);
+        */
         
         
         break;
     case '1':
 
-        kprintf("sending message: 2\r\n");
+        kprintf("sending message: 2 (from PROCESS-A with send)\r\n");
         ready(create
               ((void *)send, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
                currpid[getcpuid()], 2), RESCHED_YES, 0);
 
+        kprintf("receiving message in current process with recv\r\n");
         message in1 = recv();
 
         kprintf("message received: %d", in1);
@@ -136,18 +149,22 @@ void testcases(void)
         break;
     case '2':
 
-        ready(create
-              ((void *)send, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
-               currpid[getcpuid()], 3), RESCHED_YES, 0);
-        ready(create
-              ((void *)sendnow, INITSTK, PRIORITY_MED, "PROCESS-B", 2,
-               currpid[getcpuid()], 4), RESCHED_YES, 0);
+        kprintf("Sending messages 123 and 456 (from PROCESS-A with send)\r\n");
+        testpid = create((void *)testSend, INITSTK, PRIORITY_MED, "RECV", 1, currpid[getcpuid()]);
 
-        message in2 = recv();
-        message in3 = recvnow();
+        /*kprintf("Sending message 123: %d\r\n", 123);
+        send(testpid, 123);
 
-        kprintf("1st message received: %d\r\n", in2);
-        kprintf("2nd message received: %d", in3);
+        kprintf("Sending message 456: %d", 456);
+        send(testpid, 456);*/
+
+        ready(testpid, RESCHED_YES, 0);
+
+        message rec1 = recv();
+        message rec2 = recv();
+
+        kprintf("message 1: %d\tmessage 2: %d\r\n", rec1, rec2);
+        kprintf("if message 1 == 123 and message 2 == 456, then queueing is working in send");
 
         break;
     case '3':

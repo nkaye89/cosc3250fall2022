@@ -65,7 +65,6 @@ syscall send(int pid, message msg)
 		lock_release(rpcb->msg_var.core_com_lock);			  // release lock
 		resched();										      // resched proc
 		
-		return OK;
 	}
 	else {
 		rpcb->msg_var.msgin = msg;							// Deposit message
@@ -76,7 +75,8 @@ syscall send(int pid, message msg)
 		}else {
 			lock_release(rpcb->msg_var.core_com_lock);		// release lock
 		}
-
-		return OK;		
+		
 	}
+
+	return OK;
 }
