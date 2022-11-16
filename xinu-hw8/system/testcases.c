@@ -67,9 +67,15 @@ void testBlocking()
 
 }
 
+int apid;
+int testpid;
 void receiveMsg()
 {
-    
+
+}
+
+void killFunc(ulong pid) {
+    kill(pid);
 }
 
 /**
@@ -89,31 +95,31 @@ void testcases(void)
     {
     case '0':
 
-        kprintf("sending message: 1\r\n");
+        /*kprintf("sending message: 1\r\n");
         ready(create
               ((void *)sendnow, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
                currpid[getcpuid()], 1), RESCHED_YES, 0);
 
         message in = recvnow();
 
-        kprintf("message received: %d", in);
+        kprintf("message received: %d", in);*/
 
-        /*
-        pcb *ppcb;
-
-        ulong testpid = create((void*) receiveMsg, INITSTK, PRIORITY_LOW, "RECV", 0);
-        ppcb = &proctab[testpid];
+        
+        //this is from assignment 8 word doc.
+        apid = 0;
+        testpid = create((void*) receiveMsg, INITSTK, PRIORITY_LOW, "RECV", 0);
+        pcb *ppcb = &proctab[apid];
         ppcb->core_affinity = 0;
-        result = sendnow(testpid, 0x5);
-        kprintf("Result: %d", result);
+        syscall result = sendnow(apid, 0x5);
+        kprintf("Result: %d\r\n", result);
         if((TRUE == ppcb->msg_var.hasMessage) && (0x5 == ppcb->msg_var.msgin)) {
             kprintf("Message correctly sent.\r\n");
         }else {
             kprintf("Recv process hasMessage == %d, msgin == %d\r\n",
-            ppcb->msg_var.hasMessage, ppsb->msg_var.msgin);
+            ppcb->msg_var.hasMessage, ppcb->msg_var.msgin);
         }
-        kill(testpid);
-        */
+        kill(apid);
+        
         
         break;
     case '1':
