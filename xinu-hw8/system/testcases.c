@@ -41,35 +41,6 @@ void printpid(int times)
                 call resched
 */
 
-/*
-void printLoop()
-{
-    uint cpuid = getcpuid();
-
-    enable();
-    while(TRUE) {
-        kprintf("This is process %d\r\n", currpid[cpuid]);
-        udelay(40);
-    }
-}
-*/
-
-/*
-void printList(uint core)	{
-	memblk *curr;
-	curr = freelist[core].head;
-
-	kprintf("\nSTART PRINT\r\n");
-	while(curr != NULL)	{
-		kprintf("\r\nAddress: %d \r\n", curr);
-		kprintf("Length: %d \r\n", curr->length);
-		kprintf("End Address: %d \r\n", ((ulong)(curr) + (curr->length)));
-		//kprintf("-----------------\r\n");
-		curr = curr->next;
-	}
-	kprintf("END PRINT\r\n");
-} */
-
 //test methods
 void testSendnow() 
 {
@@ -94,6 +65,11 @@ void testRecv()
 void testBlocking()
 {
 
+}
+
+void receiveMsg()
+{
+    
 }
 
 /**
@@ -121,6 +97,23 @@ void testcases(void)
         message in = recvnow();
 
         kprintf("message received: %d", in);
+
+        /*
+        pcb *ppcb;
+
+        ulong testpid = create((void*) receiveMsg, INITSTK, PRIORITY_LOW, "RECV", 0);
+        ppcb = &proctab[testpid];
+        ppcb->core_affinity = 0;
+        result = sendnow(testpid, 0x5);
+        kprintf("Result: %d", result);
+        if((TRUE == ppcb->msg_var.hasMessage) && (0x5 == ppcb->msg_var.msgin)) {
+            kprintf("Message correctly sent.\r\n");
+        }else {
+            kprintf("Recv process hasMessage == %d, msgin == %d\r\n",
+            ppcb->msg_var.hasMessage, ppsb->msg_var.msgin);
+        }
+        kill(testpid);
+        */
         
         break;
     case '1':
@@ -141,7 +134,7 @@ void testcases(void)
               ((void *)send, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
                currpid[getcpuid()], 3), RESCHED_YES, 0);
         ready(create
-              ((void *)sendnow, INITSTK, PRIORITY_MED, "PROCESS-A", 2,
+              ((void *)sendnow, INITSTK, PRIORITY_MED, "PROCESS-B", 2,
                currpid[getcpuid()], 4), RESCHED_YES, 0);
 
         message in2 = recv();
