@@ -1,4 +1,4 @@
-../system/kill.o: ../system/kill.c ../include/xinu.h ../include/arm.h \
+../system/printf.o: ../system/printf.c ../include/xinu.h ../include/arm.h \
  ../include/interrupt.h ../include/stddef.h ../include/bcm2837.h \
  ../include/kernel.h ../include/stdarg.h ../include/conf.h \
  ../include/memory.h ../include/spinlock.h ../include/compiler.h \

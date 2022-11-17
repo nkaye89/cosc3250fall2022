@@ -83,15 +83,16 @@ syscall putc(char c)
 	if (serial_port.oidle == 1) { // is idle
 		serial_port.oidle = 0;
 
-		volatile struct pl011_uart_csreg *regptr = (struct pl011_uart_csreg *)UART_CSREG;
-		regptr->cr = c;
-		regptr->dr = c;		
+		((struct pl011_uart_csreg *)serial_port.csr)->dr = c;
+		//regptr->cr = c;
+		//serial_port.csr = c;
+		//regptr->dr = c;		
 	}
 	else {
 		wait(serial_port.osema);
 		lock_acquire(serial_port.olock);
 
-		serial_port.out[(serial_port.ocount + 1) % UART_OBLEN] = c;
+		serial_port.out[(serial_port.ocount + serial_port.ostart) % UART_OBLEN] = c;
 		serial_port.ocount++;
 		lock_release(serial_port.olock);
 	}

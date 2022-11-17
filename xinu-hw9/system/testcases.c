@@ -37,12 +37,16 @@ void testcases(void)
     enable();
 
     printf("===TEST BEGIN===\r\n");
+    printf("0)\r\n");
+    printf("\r\n");
     
 	// TODO: Test your operating system!
-    c = getc();
+    c = kgetc();
     switch (c)
     {
-
+    case '0':
+        printf("test 0\r\n");
+        break;
     default:
         break;
     }

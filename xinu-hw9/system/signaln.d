@@ -1,4 +1,4 @@
-../system/recvnow.o: ../system/recvnow.c ../include/xinu.h \
+../system/signaln.o: ../system/signaln.c ../include/xinu.h \
  ../include/arm.h ../include/interrupt.h ../include/stddef.h \
  ../include/bcm2837.h ../include/kernel.h ../include/stdarg.h \
  ../include/conf.h ../include/memory.h ../include/spinlock.h \
