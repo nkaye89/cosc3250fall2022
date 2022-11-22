@@ -10,6 +10,14 @@
  */
 /* Embedded XINU, Copyright (C) 2007.  All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 /* Function prototypes */
@@ -38,10 +46,9 @@ void testcases(void)
 
     printf("===TEST BEGIN===\r\n");
     printf("0)\r\n");
-    printf("\r\n");
     
 	// TODO: Test your operating system!
-    c = kgetc();
+    c = getc();
     switch (c)
     {
     case '0':

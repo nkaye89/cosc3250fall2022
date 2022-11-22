@@ -3,6 +3,14 @@
  */
 /* Embedded Xinu, Copyright (C) 2018. All rights reserved. */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <xinu.h>
 
 extern struct uart serial_port;
@@ -90,12 +98,19 @@ syscall putc(char c)
 	}
 	else {
 		wait(serial_port.osema);
+		
 		lock_acquire(serial_port.olock);
 
 		serial_port.out[(serial_port.ocount + serial_port.ostart) % UART_OBLEN] = c;
 		serial_port.ocount++;
 		lock_release(serial_port.olock);
+		
 	}
+
+	/*lock_acquire(serial_port.olock);
+	serial_port.out[(serial_port.ocount + serial_port.ostart) % UART_OBLEN] = c;
+	serial_port.ocount++;
+	lock_release(serial_port.olock);*/
 
 
 	restore(im);
