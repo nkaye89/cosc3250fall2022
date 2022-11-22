@@ -58,6 +58,7 @@ void testcases(void)
         break;
     }
 
+    // testing new version control system
     while (numproc > 5)  // Four null procs plus this test proc.
     {
         resched();
