@@ -45,7 +45,9 @@ void testcases(void)
     enable();
 
     printf("===TEST BEGIN===\r\n");
-    printf("0)\r\n");
+    printf("0) wait test\r\n");
+    printf("1) getc test\r\n");
+    printf("2) putc test\r\n");
     
 	// TODO: Test your operating system!
     c = getc();
@@ -53,6 +55,20 @@ void testcases(void)
     {
     case '0':
         printf("test 0\r\n");
+        testSemWait(testsem);
+        break;
+    case '1':
+        printf("test 1\r\n");
+        printf("Enter a character\r\n");
+        c = getc();
+        printf("You typed: %c\r\n", c);
+        break;
+    case '2':
+        printf("test 2\r\n");
+        printf("putting 'A'\r\n");
+        putc('A');
+        printf("\r\n");
+        
         break;
     default:
         break;
