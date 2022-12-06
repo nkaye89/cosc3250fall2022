@@ -7,6 +7,14 @@
 /*                                                                 */
 /*                                                                 */
 
+/**
+ * COSC 3250 - Project 3
+ * Implements kprintf
+ * @authors [Noah Kaye; Zach Thompson]
+ * Instructor [sabirat]
+ * TA-BOT:MAILTO [noah.kaye@marquette.edu; zach.thompson@marquette.edu]
+ */
+
 #include <kernel.h>
 #include <memory.h>
 #include <file.h>
