@@ -33,7 +33,7 @@ devcall fileDelete(int fd)
     //  access to the directory index.
 
     //given
-    struct dentry *phw = supertab->sb_disk  //found in file.h
+    struct dentry *phw = supertab->sb_disk;  //found in file.h
     int diskfd = phw - devtab;
 
     //wait
@@ -42,7 +42,7 @@ devcall fileDelete(int fd)
 
     //error check: dirlist, current file state
     //
-	if  ((NULL == supertab) || (NULL == filetab) || (NULL == supertab->sb_dirlist))	{
+	if  ((NULL == supertab) || (NULL == filetab) || (NULL == supertab->sb_dirlst))	{
         signal(supertab->sb_dirlock);
 		return SYSERR;
 	}
@@ -57,13 +57,13 @@ devcall fileDelete(int fd)
     supertab->sb_dirlst->db_fnodes[fd].fn_blocknum = 0;
     supertab->sb_dirlst->db_fnodes[fd].fn_cursor = 0;
     supertab->sb_dirlst->db_fnodes[fd].fn_length = 0;
-    supertab->sb_dirlst->db_fnodes[fd].fn_name = 0;
+    //supertab->sb_dirlst->db_fnodes[fd].fn_name = 0;
     supertab->sb_dirlst->db_fnodes[fd].fn_data = 0;
 	filetab[fd].fn_state = FILE_FREE;
     filetab[fd].fn_blocknum = 0;
     filetab[fd].fn_cursor = 0;
     filetab[fd].fn_length = 0;
-    filetab[fd].fn_name = 0;
+    //filetab[fd].fn_name = 0;
     filetab[fd].fn_data = 0;
 
     //free up data with sbFreeBlock
