@@ -25,14 +25,22 @@ devcall swizzle(int diskfd, struct freeblock *freeblk){
     //if free2 is null
     //  set freeblock's fr_next to 0
     //else
-    //  set freeblock's fr_next to be freeblock's fr_next's blockname
+    //  set freeblock's fr_next to be freeblock's fr_next's blockname/(blocknum???)
     //
+    if(free2 == NULL) {
+        freeblk->fr_next = 0;
+    }else {
+        freeblk->fr_next = freeblk->fr_next->fr_blocknum;
+    }
+
+    //given
     seek(diskfd, freeblk->fr_blocknum)
     if(SYSERR == write(diskfd, freeblk, sizeof(struct freeblock))) {    //write(where, what, length)
         return SYSERR;
     }
 
     //reset the freeblock's fr_next to its copy
+    freeblk->fr_next = free2;
 
     return OK;
 }
@@ -50,12 +58,18 @@ devcall swizzleSuperBlock(int diskfd, struct superblock *psuper){
     //overwrite sb_freelist to be freelist's blocknum
     //overwrite sb_dirlist to be sb_dirlist's blocknum
     //
+    psuper->sb_freelist = psuper->sb_freelist->fr_blocknum;
+    psuper->sb_dirlst = psuper->sb_dirlist->db_blocknum;
+
+    //given
     seek(diskfd, psuper->blocknum);
     if(SYSERR == write(diskfd, psuper, sizeof(struct superblock))) {
         return SYSERR;
     }
     
     //revert copies
+    psuper->sb_freelst = swizzle;
+    psuper->sb_dirlst = swizzle2;
 
     return OK;
 }
@@ -76,28 +90,41 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
 
     //error check if superblock is null
     //
+    if(psuper == NULL) {
+        return SYSERR;
+    }
+
     phw = psuper->sb_disk;  //found in file.h
 
     //errorcheck != null
     //
+    if(phw == NULL) {
+        return SYSERR;
+    }
     //errorcheck block we got as a param (! <= 0 && !> total blocks on disk)
     //
+    if(block <= 0 || block > psuper->sb_blocktotal) {
+        return SYSERR;
+    }
+
+    //given
     diskfd = phw - devtab;
     //wait
     //
-    //first collector node
+    //first collector node  //not sure what "wait" and "first collector node" are supposed to mean
+    //given
     struct freeblock *freeblk = psuper->sb_freelist;
 
-    //CASE: if the disk is completely full
+    //CASE 1: if the disk is completely full
     //  free up 1 block, make it a collector node
     //
     //while loop to get to the last collector node
     //  freeblock fr_next
     //
-    //CASE: the freeblock/collector is completely full or completely empry
+    //CASE 2: the freeblock/collector is completely full or completely empry
     //  create new collector block node, add to the first spot
     //
-    //CASE: add to the next available index in collector node
+    //CASE 3: add to the next available index in collector node
     //  put our block into the next spot in the array
     //  write this info to the disk
     //
