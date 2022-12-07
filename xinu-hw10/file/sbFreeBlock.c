@@ -41,7 +41,7 @@ devcall swizzle(int diskfd, struct freeblock *freeblk){
         freeblk->fr_next = freeblk->fr_next->fr_blocknum;
     }
 
-    //given
+    
     seek(diskfd, freeblk->fr_blocknum);
     if(SYSERR == write(diskfd, freeblk, sizeof(struct freeblock))) {    //write(where, what, length)
         return SYSERR;
@@ -135,14 +135,18 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
         //free up 1 block, make it a collector node
         struct freeblock *newBlock = malloc(sizeof(struct freeblock));
         newBlock->fr_count = 0;
-        newBlock->fr_free[freeblk->fr_count] = block;
         newBlock->fr_blocknum = block;
         
         //add newBlock to psuper
         psuper->sb_freelst = newBlock;
 
         //write info to disk
-        swizzleSuperBlock(diskfd, psuper);
+        if(SYSERR == swizzleSuperBlock(diskfd, psuper)) {
+            return SYSERR;
+        }
+        if(SYSERR == swizzle(diskfd, psuper->sb_freelst)) {
+            return SYSERR;
+        }
 
         signal(psuper->sb_freelock);
         return OK;
@@ -159,16 +163,17 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
     if(freeblk->fr_count >= FREEBLOCKMAX || freeblk->fr_count == 0) {
         //create new collector block node
         struct freeblock *newCollector;
-        newCollector = malloc(sizeof(struct freeblock));
+        newCollector = (struct freeblock *)malloc(sizeof(struct freeblock));
         newCollector->fr_count = 0;
         newCollector->fr_blocknum = block;
-        newCollector->fr_free[freeblk->fr_count] = block;
 		
         //add to first spot
         freeblk->fr_next = newCollector;
 
         //write info to disk
-        swizzle(diskfd, freeblk);
+        if(SYSERR == swizzle(diskfd, freeblk)) {
+            return SYSERR;
+        }
 
         signal(psuper->sb_freelock);
         return OK;
@@ -180,11 +185,13 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
     //
     if (freeblk->fr_count < FREEBLOCKMAX) {
         //add to next available index in collector node and put our block into next spot in array
-        freeblk->fr_count++;
         freeblk->fr_free[freeblk->fr_count] = block;
+        freeblk->fr_count++;
 		
         //write info to disk
-        swizzle(diskfd, freeblk);   //not sure about this one
+        if(SYSERR == swizzle(diskfd, freeblk)) {
+            return SYSERR;
+        }
 
         signal(psuper->sb_freelock);
         return OK;
