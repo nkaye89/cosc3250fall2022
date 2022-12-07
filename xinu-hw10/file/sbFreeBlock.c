@@ -142,9 +142,11 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
 
         //write info to disk
         if(SYSERR == swizzleSuperBlock(diskfd, psuper)) {
+            signal(psuper->sb_freelock);
             return SYSERR;
         }
         if(SYSERR == swizzle(diskfd, psuper->sb_freelst)) {
+            signal(psuper->sb_freelock);
             return SYSERR;
         }
 
@@ -164,14 +166,24 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
         //create new collector block node
         struct freeblock *newCollector;
         newCollector = (struct freeblock *)malloc(sizeof(struct freeblock));
+        if(newCollector == NULL) {
+            signal(psuper->sb_freelock);
+            return SYSERR;
+        }
         newCollector->fr_count = 0;
         newCollector->fr_blocknum = block;
+        newCollector->fr_next = NULL;
 		
         //add to first spot
         freeblk->fr_next = newCollector;
 
         //write info to disk
         if(SYSERR == swizzle(diskfd, freeblk)) {
+            signal(psuper->sb_freelock);
+            return SYSERR;
+        }
+        if(SYSERR == swizzle(diskfd, newCollector)) {
+            signal(psuper->sb_freelock);
             return SYSERR;
         }
 
@@ -190,6 +202,7 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
 		
         //write info to disk
         if(SYSERR == swizzle(diskfd, freeblk)) {
+            signal(psuper->sb_freelock);
             return SYSERR;
         }
 
