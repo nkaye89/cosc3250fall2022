@@ -16,5 +16,17 @@ command xsh_test(int nargs, char *args[])
 {
     //TODO: Test your O/S.
     printf("This is where you should put some testing code.\n");
+
+    if(nargs > 1) {
+        if(0 == strncmp(args[1], "test1")) {
+            
+            struct freeblock *blk = sbGetBlock();
+            sbFreeBlock(blk, 255);
+
+            
+
+        }
+    }
+
     return OK;
 }
