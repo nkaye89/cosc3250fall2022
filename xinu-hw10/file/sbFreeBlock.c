@@ -162,7 +162,7 @@ devcall sbFreeBlock(struct superblock *psuper, int block)
     //CASE 2: the freeblock/collector is completely full or completely empry
     //  create new collector block node, add to the first spot
     //
-    if(freeblk->fr_count >= FREEBLOCKMAX || freeblk->fr_count == 0 /*&& psuper->sb_freelst == freeblk*/) {
+    if(freeblk->fr_count >= FREEBLOCKMAX || freeblk->fr_count == 0 && psuper->sb_freelst == freeblk) {
         //create new collector block node
         struct freeblock *newCollector;
         newCollector = (struct freeblock *)malloc(sizeof(struct freeblock));
